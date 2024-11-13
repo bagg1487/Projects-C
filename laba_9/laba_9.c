@@ -15,6 +15,7 @@ void average_string(float **arr,int N){
         for(int j=0;j<N;j++){
             if (arr[i][j]>=0)
                 sum+=arr[i][j];
+             free(sum_string);
             }
         sum=sum/N;
         sum_string[i]=sum;
@@ -49,6 +50,7 @@ void new_array(float **arr,int N){
         }}
     for(int i=0;i<max_size;i++) printf("%8.2lf",array[i]);
     printf("\n");
+     free(array);
 }
 // 4)Вычислить количество отрицательных элементов полученного массива.
 void count_negative(float **arr,int N){
