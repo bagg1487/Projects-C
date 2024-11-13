@@ -41,7 +41,7 @@ void new_array(float **arr,int N){
             if (j < N - i - 1)
                 array[index++]=arr[i][j];    
         }}
-    index=N;
+    index=((N*N)-N)/2;
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
             if (j > i)
@@ -63,8 +63,8 @@ int main(){
     printf("Введите размер матрицы ");
     scanf("%d",&N);
     srand(time(NULL));
-    if(N==0) printf("uncorrect number\n  ");
-
+    if(N<2 || N>15) printf("uncorrect number\n  ");
+    else{
     float **arr2 = (float **)malloc(N * sizeof(float *)); 
     if (arr2 == NULL) {
         printf("Error in malloc arr2!\n");
@@ -94,4 +94,5 @@ int main(){
         arr2[i] = NULL;}
     free(arr2);
     arr2 = NULL;
+    }
 }
