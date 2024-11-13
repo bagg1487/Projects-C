@@ -15,7 +15,6 @@ void average_string(float **arr,int N){
         for(int j=0;j<N;j++){
             if (arr[i][j]>=0)
                 sum+=arr[i][j];
-             free(sum_string);
             }
         sum=sum/N;
         sum_string[i]=sum;
@@ -23,7 +22,7 @@ void average_string(float **arr,int N){
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++)
             arr[i][j]+=sum_string[i];
-        }}
+        }free(sum_string);}
 // 2)Определить сумму всех элементов матрицы. 
 void sum_matrix(float **arr,int N){
     float sum=0;
@@ -50,7 +49,7 @@ void new_array(float **arr,int N){
         }}
     for(int i=0;i<max_size;i++) printf("%8.2lf",array[i]);
     printf("\n");
-    
+    free(array);
 }
 // 4)Вычислить количество отрицательных элементов полученного массива.
 void count_negative(float **arr,int N){
@@ -96,7 +95,5 @@ int main(){
         arr2[i] = NULL;}
     free(arr2);
     arr2 = NULL;
-     free(sum_string);
-     free(array);
     }
 }
