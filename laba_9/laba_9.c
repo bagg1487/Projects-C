@@ -50,7 +50,7 @@ void new_array(float **arr,int N){
         }}
     for(int i=0;i<max_size;i++) printf("%8.2lf",array[i]);
     printf("\n");
-     free(array);
+    
 }
 // 4)Вычислить количество отрицательных элементов полученного массива.
 void count_negative(float **arr,int N){
@@ -96,5 +96,7 @@ int main(){
         arr2[i] = NULL;}
     free(arr2);
     arr2 = NULL;
+     free(sum_string);
+     free(array);
     }
 }
