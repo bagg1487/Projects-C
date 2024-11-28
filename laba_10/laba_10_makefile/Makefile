@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra
 
-SRGS = laba_10_main.c laba_10_others.c
+SRCS = laba_10_main.c laba_10_others.c
 OBJS = ${SRCS:.c.o}
 TARGET = prog_laba_10
 
