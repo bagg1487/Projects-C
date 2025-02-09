@@ -1,1 +1,1 @@
-all labs for first semester
+all labs 
