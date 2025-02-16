@@ -19,7 +19,7 @@ int CheckSum(int n,int *A){
     int sum = 0;
     for(int i = 0; i < n; i++)
         sum+=A[i];
-    printf("контрольная сумма ");
+    printf("Контрольная сумма ");
     return sum;}
 
 void RunNumber(int n, int *A){
@@ -28,7 +28,7 @@ void RunNumber(int n, int *A){
         if(A[i]>=A[i+1])
             SumSeriy++;
     }
-    printf("количество серий %d\n",SumSeriy);}
+    printf("Количество серий %d \n\n",SumSeriy);}
 
 void PrintMas(int n, int *A){
     for(int i = 0; i < n; i++)
@@ -36,6 +36,10 @@ void PrintMas(int n, int *A){
     printf("\n");}
 
 void SelectSort(int n,int *A){
+    printf("Массив до сортировки\n");
+    PrintMas(n, A);
+    printf("%d\n",CheckSum(n,A));
+    RunNumber(n,A);
     int swap = 0, index = 0,C = 0, M = 0;
     for(int i = 0; i < n - 1; i++){
         index = i;
@@ -47,13 +51,17 @@ void SelectSort(int n,int *A){
         swap = A[index];
         A[index] = A[i];
         A[i] = swap;
-        M+=1;
-        
+        M+=3;  
     }
-    printf("Обычный SelectSort\nСравнения: %d Пересылки: %d Сумма: %d\n",C,M, C + M);
-}
+    printf("Обычный SelectSort\n Сравнения: %d Пересылки: %d Сумма: %d\n",C,M, C + M);
+    printf("%d\n",CheckSum(n,A));
+    RunNumber(n,A);}
 
 void UpdatedSelectSort(int n,int *A){
+    printf("Массив до сортировки\n");
+    PrintMas(n, A);
+    printf("%d\n",CheckSum(n,A));
+    RunNumber(n,A);
     int swap = 0, index = 0,C = 0, M = 0;
     for(int i = 0; i < n - 1; i++){
         index = i;
@@ -66,68 +74,73 @@ void UpdatedSelectSort(int n,int *A){
             swap = A[index];
             A[index] = A[i];
             A[i] = swap;
-            M+=1;
+            M+=3;
         }
     }
-    printf("Улучшенный SelectSort\nСравнения: %d Пересылки: %d Сумма: %d\n",C,M,C + M);
-}
+    printf("Улучшенный SelectSort\n Сравения: %d Пересылки: %d Сумма: %d\n",C,M,C + M);
+    printf("%d\n",CheckSum(n,A));
+    RunNumber(n,A);}
+
+void BubbleSort(int n, int *A) {
+    printf("Массив до сортировки\n");
+    PrintMas(n, A);
+    printf("%d\n",CheckSum(n,A));
+    RunNumber(n,A);
+    int C = 0, M = 0;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            C++;
+            if (A[j] < A[j + 1]) {
+                int tmp = A[j + 1];
+                A[j + 1] = A[j];
+                A[j] = tmp;
+                M += 3;
+            }
+        }
+    }
+    printf("BubbleSort\n Сравения: %d Пересылки: %d Сумма: %d\n",C ,M ,C + M);
+    printf("%d\n",CheckSum(n, A));
+    RunNumber(n, A);}
+
+void Increase(int n, int *A){
+    printf("Возрастание\n");
+    FillInc(n, A); 
+    SelectSort(n, A);
+    
+    FillInc(n, A); 
+    UpdatedSelectSort(n,A);
+
+    FillInc(n, A); 
+    BubbleSort(n, A);}
+
+void Decrease(int n, int *A){
+    printf("\n Убывание\n");
+    FillDec(n, A);
+    SelectSort(n, A);
+    
+    FillDec(n, A);
+    UpdatedSelectSort(n, A);
+
+    FillDec(n, A); 
+    BubbleSort(n, A);}
+
+void Random(int n, int *A){
+    printf("\n Рандом\n");
+    FillRand(n, A);
+    SelectSort(n, A);
+
+    FillRand(n, A);
+    UpdatedSelectSort(n, A);
+    
+    FillRand(n, A); 
+    BubbleSort(n, A);}
 
 int main(){
-    const int n = 100;
-    int array[100]={0};
+    const int n = 10;
+    int array[10]={0};
     int checksum;
-    // теоретическое число сравнений для массива с n = 10: C = n * (n - 1) / 2 = 45; число пересылок M = n - 1 = 9
-    // теоретическое число сравнений для массива с n = 100: C = n * (n - 1) / 2 = 4950; число пересылок M = n - 1 = 99
-    printf("возрастание\n");
-    FillInc(n, array); 
-    PrintMas(n, array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-    SelectSort(n,array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-
-    FillInc(n, array); 
-    PrintMas(n, array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-    UpdatedSelectSort(n,array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-
-    printf("\nубывание\n");
-    FillDec(n, array);
-    PrintMas(n, array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-    SelectSort(n,array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-
-    FillDec(n, array);
-    PrintMas(n, array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-    UpdatedSelectSort(n,array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-
-
-    printf("\nрандом\n");
-
-    FillRand(n, array);
-    PrintMas(n, array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-    SelectSort(n,array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-
-    FillRand(n, array);
-    PrintMas(n, array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
-    UpdatedSelectSort(n,array);
-    printf("%d\n",CheckSum(n,array));
-    RunNumber(n,array);
+  
+    Increase(n,array);
+    Decrease(n,array);
+    Random(n,array);
 }
