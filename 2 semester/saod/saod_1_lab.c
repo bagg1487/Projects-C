@@ -90,7 +90,7 @@ void BubbleSort(int n, int *A) {
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - i - 1; j++) {
             C++;
-            if (A[j] < A[j + 1]) {
+            if (A[j] > A[j + 1]) {
                 int tmp = A[j + 1];
                 A[j + 1] = A[j];
                 A[j] = tmp;
@@ -104,43 +104,49 @@ void BubbleSort(int n, int *A) {
 
 void Increase(int n, int *A){
     printf("Возрастание\n");
-    FillInc(n, A); 
-    SelectSort(n, A);
+
+    // FillInc(n, A); 
+    // SelectSort(n, A);
     
-    FillInc(n, A); 
-    UpdatedSelectSort(n,A);
+    // FillInc(n, A); 
+    // UpdatedSelectSort(n,A);
 
     FillInc(n, A); 
     BubbleSort(n, A);}
 
 void Decrease(int n, int *A){
     printf("\n Убывание\n");
-    FillDec(n, A);
-    SelectSort(n, A);
+
+//     // FillDec(n, A);
+//     // SelectSort(n, A);
     
-    FillDec(n, A);
-    UpdatedSelectSort(n, A);
+//     // FillDec(n, A);
+//     // UpdatedSelectSort(n, A);
 
     FillDec(n, A); 
     BubbleSort(n, A);}
 
 void Random(int n, int *A){
     printf("\n Рандом\n");
-    FillRand(n, A);
-    SelectSort(n, A);
+    
+//     // FillRand(n, A);
+//     // SelectSort(n, A);
 
-    FillRand(n, A);
-    UpdatedSelectSort(n, A);
+//     // FillRand(n, A);
+//     // UpdatedSelectSort(n, A);
     
     FillRand(n, A); 
     BubbleSort(n, A);}
 
+
+
 int main(){
-    const int n = 10;
-    int array[10]={0};
+    const int n = 100;
+    int array[100]={0};
     int checksum;
   
     Increase(n,array);
     Decrease(n,array);
     Random(n,array);
+    
 }
