@@ -117,7 +117,4 @@ int main() {
     RandomStudents(students);
 
     QuickSort(n, students, compareByMath);
-
-
-    return 0;
 }
