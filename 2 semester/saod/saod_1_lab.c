@@ -103,42 +103,39 @@ void BubbleSort(int n, int *A) {
     RunNumber(n, A);}
 
     void ShakerSort(int n, int *A) {
-        printf("Массив до сортировки\n");
-        PrintMas(n, A);
-        printf("%d\n", CheckSum(n, A));
-        RunNumber(n, A);
-        int left = 0, right = n - 1;
-        int C = 0, M = 0;
-        int swap_flag;
-        do {
-            swap_flag = 0;
-            for (int i = left; i < right; i++) {
-                C++;
-                if (A[i] > A[i + 1]) {
-                    int tmp = A[i];
-                    A[i] = A[i + 1];
-                    A[i + 1] = tmp;
-                    M += 3;
-                    swap_flag = 1;
-                }
-            }
-            right--;
-            for (int i = right; i > left; i--) {
-                C++;
-                if (A[i] < A[i - 1]) {
-                    int tmp = A[i];
-                    A[i] = A[i - 1];
-                    A[i - 1] = tmp;
-                    M += 3;
-                    swap_flag = 1;
-                }
-            }
-            left++;
-        } while (swap_flag);
-        printf("ShakerSort\n Сравнения: %d Пересылки: %d Сумма: %d\n", C, M, C + M);
-        printf("%d\n", CheckSum(n, A));
         
-    }
+        int left = 0, right = n - 1, C = 0, M = 0;
+        int k = n;
+    
+        do {
+            for (int j = right; j > left; j--) {
+                C++;
+                if (A[j] < A[j - 1]) {
+                    int tmp = A[j];
+                    A[j] = A[j - 1];
+                    A[j - 1] = tmp;
+                    M += 3;
+                    k = j;
+                }
+            }
+            left = k;
+    
+            for (int j = left; j < right; j++) {
+                C++;
+                if (A[j] > A[j + 1]) {
+                    int tmp = A[j];
+                    A[j] = A[j + 1];
+                    A[j + 1] = tmp;
+                    M += 3;
+                    k = j;
+                }
+            }
+            right = k;
+        } while (left < right);
+        printf("ShakerSort\n Сравения: %d Пересылки: %d Сумма: %d\n",C ,M ,C + M);
+        printf("%d\n",CheckSum(n, A));
+        RunNumber(n, A);}
+    
 
 void Increase(int n, int *A){
     printf("Возрастание\n");
