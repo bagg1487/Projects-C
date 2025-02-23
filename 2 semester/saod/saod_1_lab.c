@@ -102,6 +102,44 @@ void BubbleSort(int n, int *A) {
     printf("%d\n",CheckSum(n, A));
     RunNumber(n, A);}
 
+    void ShakerSort(int n, int *A) {
+        printf("Массив до сортировки\n");
+        PrintMas(n, A);
+        printf("%d\n", CheckSum(n, A));
+        RunNumber(n, A);
+        int left = 0, right = n - 1;
+        int C = 0, M = 0;
+        int swap_flag;
+        do {
+            swap_flag = 0;
+            for (int i = left; i < right; i++) {
+                C++;
+                if (A[i] > A[i + 1]) {
+                    int tmp = A[i];
+                    A[i] = A[i + 1];
+                    A[i + 1] = tmp;
+                    M += 3;
+                    swap_flag = 1;
+                }
+            }
+            right--;
+            for (int i = right; i > left; i--) {
+                C++;
+                if (A[i] < A[i - 1]) {
+                    int tmp = A[i];
+                    A[i] = A[i - 1];
+                    A[i - 1] = tmp;
+                    M += 3;
+                    swap_flag = 1;
+                }
+            }
+            left++;
+        } while (swap_flag);
+        printf("ShakerSort\n Сравнения: %d Пересылки: %d Сумма: %d\n", C, M, C + M);
+        printf("%d\n", CheckSum(n, A));
+        
+    }
+
 void Increase(int n, int *A){
     printf("Возрастание\n");
 
@@ -111,32 +149,41 @@ void Increase(int n, int *A){
     // FillInc(n, A); 
     // UpdatedSelectSort(n,A);
 
-    FillInc(n, A); 
-    BubbleSort(n, A);}
+    // FillInc(n, A); 
+    // BubbleSort(n, A);
+        FillInc(n, A); 
+        ShakerSort(n, A);
+}
 
 void Decrease(int n, int *A){
     printf("\n Убывание\n");
 
-//     // FillDec(n, A);
-//     // SelectSort(n, A);
+    // FillDec(n, A);
+    // SelectSort(n, A);
     
-//     // FillDec(n, A);
-//     // UpdatedSelectSort(n, A);
+    // FillDec(n, A);
+    // UpdatedSelectSort(n, A);
 
-    FillDec(n, A); 
-    BubbleSort(n, A);}
+    // FillDec(n, A); 
+    // BubbleSort(n, A);
+        FillDec(n, A); 
+        ShakerSort(n, A);
+    }
 
 void Random(int n, int *A){
     printf("\n Рандом\n");
     
-//     // FillRand(n, A);
-//     // SelectSort(n, A);
+    // FillRand(n, A);
+    // SelectSort(n, A);
 
-//     // FillRand(n, A);
-//     // UpdatedSelectSort(n, A);
+    // FillRand(n, A);
+    // UpdatedSelectSort(n, A);
     
-    FillRand(n, A); 
-    BubbleSort(n, A);}
+    // FillRand(n, A); 
+    // BubbleSort(n, A);
+        FillRand(n, A); 
+        ShakerSort(n, A);
+}
 
 
 
