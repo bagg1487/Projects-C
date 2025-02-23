@@ -57,7 +57,7 @@ int main() {
         generateArray(arr, n, 0);
         bubbleSort(arr, n, &comparisons, &swaps);
         int totalAsc = comparisons + swaps;
-        int theoretical = 5 * n * (n - 1) / 2;
+        int theoretical = 5 * n * (n - 1) / 4;
         printf("%d\t%d\t\t%d\t\t%d\t\t%d\n", n, theoretical, totalDesc, totalRand, totalAsc);
     }
 
