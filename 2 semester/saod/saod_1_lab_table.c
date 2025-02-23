@@ -107,29 +107,33 @@ void bubbleSort(int arr[], int n, int *comparisons, int *swaps) {
     }
 }
 
-// Шейкерная сортировка с подсчетом операций
 void shakerSort(int arr[], int n, int *comparisons, int *swaps) {
     *comparisons = 0;
     *swaps = 0;
     int left = 0, right = n - 1;
-    while (left < right) {
-        for (int i = left; i < right; i++) {
+    int k = n;
+
+    do {
+        for (int j = right; j > left; j--) {
             (*comparisons)++;
-            if (arr[i] > arr[i + 1]) {
-                swap(&arr[i], &arr[i + 1]);
-                (*swaps)+=3;
+            if (arr[j] < arr[j - 1]) {
+                swap(&arr[j], &arr[j - 1]);
+                (*swaps) += 3;
+                k = j;
             }
         }
-        right--;
-        for (int i = right; i > left; i--) {
+        left = k;
+
+        for (int j = left; j < right; j++) {
             (*comparisons)++;
-            if (arr[i] < arr[i - 1]) {
-                swap(&arr[i], &arr[i - 1]);
-                (*swaps)+=3;
+            if (arr[j] > arr[j + 1]) {
+                swap(&arr[j], &arr[j + 1]);
+                (*swaps) += 3;
+                k = j;
             }
         }
-        left++;
-    }
+        right = k;
+    } while (left < right);
 }
 
 int main() {
