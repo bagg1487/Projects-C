@@ -102,84 +102,108 @@ void BubbleSort(int n, int *A) {
     printf("%d\n",CheckSum(n, A));
     RunNumber(n, A);}
 
-    void ShakerSort(int n, int *A) {
-        
-        int left = 0, right = n - 1, C = 0, M = 0;
-        int k = n;
+void ShakerSort(int n, int *A) {
     
-        do {
-            for (int j = right; j > left; j--) {
-                C++;
-                if (A[j] < A[j - 1]) {
-                    int tmp = A[j];
-                    A[j] = A[j - 1];
-                    A[j - 1] = tmp;
-                    M += 3;
-                    k = j;
-                }
-            }
-            left = k;
-    
-            for (int j = left; j < right; j++) {
-                C++;
-                if (A[j] > A[j + 1]) {
-                    int tmp = A[j];
-                    A[j] = A[j + 1];
-                    A[j + 1] = tmp;
-                    M += 3;
-                    k = j;
-                }
-            }
-            right = k;
-        } while (left < right);
-        printf("ShakerSort\n Сравения: %d Пересылки: %d Сумма: %d\n",C ,M ,C + M);
-        printf("%d\n",CheckSum(n, A));
-        RunNumber(n, A);}
-    
+    int left = 0, right = n - 1, C = 0, M = 0;
+    int k = n;
 
+    do {
+        for (int j = right; j > left; j--) {
+            C++;
+            if (A[j] < A[j - 1]) {
+                int tmp = A[j];
+                A[j] = A[j - 1];
+                A[j - 1] = tmp;
+                M += 3;
+                k = j;
+            }
+        }
+        left = k;
+
+        for (int j = left; j < right; j++) {
+            C++;
+            if (A[j] > A[j + 1]) {
+                int tmp = A[j];
+                A[j] = A[j + 1];
+                A[j + 1] = tmp;
+                M += 3;
+                k = j;
+            }
+        }
+        right = k;
+    } while (left < right);
+    printf("ShakerSort\n Сравения: %d Пересылки: %d Сумма: %d\n",C ,M ,C + M);
+    printf("%d\n",CheckSum(n, A));
+    RunNumber(n, A);}
+    
+void InsertSort(int n, int *A) {
+    printf("Массив до сортировки\n");
+    PrintMas(n, A);
+    printf("%d\n", CheckSum(n, A));
+    RunNumber(n, A);
+
+    int C = 0, M = 0;
+    for (int i = 1; i < n; i++) {
+        int key = A[i];
+        int j = i - 1;
+        C++;
+        while (j >= 0 && A[j] > key) {
+            A[j + 1] = A[j];
+            j--;
+            C++;
+            M++;
+        }
+        A[j + 1] = key;
+        M++;
+    }
+
+    printf("InsertSort\n Сравнения: %d Пересылки: %d Сумма: %d\n", C, M, C + M);
+    printf("%d\n", CheckSum(n, A));
+    RunNumber(n, A);
+}
 void Increase(int n, int *A){
     printf("Возрастание\n");
-
-    // FillInc(n, A); 
+    FillInc(n, A);
+    
     // SelectSort(n, A);
     
-    // FillInc(n, A); 
+    
     // UpdatedSelectSort(n,A);
 
-    // FillInc(n, A); 
+   
     // BubbleSort(n, A);
-        FillInc(n, A); 
-        ShakerSort(n, A);
+      
+    // ShakerSort(n, A);
+    InsertSort(n,A);
 }
 
 void Decrease(int n, int *A){
     printf("\n Убывание\n");
-
-    // FillDec(n, A);
+    FillDec(n, A);
+    
     // SelectSort(n, A);
     
-    // FillDec(n, A);
+   
     // UpdatedSelectSort(n, A);
-
-    // FillDec(n, A); 
+    
     // BubbleSort(n, A);
-        FillDec(n, A); 
-        ShakerSort(n, A);
+       
+    // ShakerSort(n, A);
+    InsertSort(n,A);
     }
 
 void Random(int n, int *A){
     printf("\n Рандом\n");
     
-    // FillRand(n, A);
     // SelectSort(n, A);
 
-    // FillRand(n, A);
     // UpdatedSelectSort(n, A);
     
-    // FillRand(n, A); 
     // BubbleSort(n, A);
-        FillRand(n, A); 
-        ShakerSort(n, A);
+
+    // ShakerSort(n, A);
+
+    InsertSort(n,A);
 }
 
 
