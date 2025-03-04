@@ -60,7 +60,8 @@ void LinkLists(node_t* head1, node_t* head2){
 void NaViList(node_t* S){
     node_t* cur = S;
     char input,choice;
-    while (1) {
+    int t = 1;
+    while (t != 0) {
         printf("Текукщий элемент %d\n",cur->data);
         printf("S - вниз D - Вправо 0 - Для выхода\n");
         scanf(" %c", &input);
@@ -74,6 +75,7 @@ void NaViList(node_t* S){
                     printf("Достигнут конец списка. Вернуться в начало? Y/N\n");
                     scanf(" %c", &choice);
                     if (choice == 'Y') cur = S;  
+                    else t = 0;
                 }
                 break;
             case 'S':
