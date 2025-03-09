@@ -40,7 +40,7 @@ void printArray(int *arr, int n) {
 int main() {
     int a[] = {4, 2}; 
     int n = sizeof(arr) / sizeof(arr[0]); 
-
+    printf("hello git\n");
     printf("Before sorting:\n");
     printArray(arr, n);
 
