@@ -38,7 +38,7 @@ void printArray(int *arr, int n) {
 }
 
 int main() {
-    int a[] = {4, 2, 0}; 
+    int a[] = {4, 2}; 
     int n = sizeof(arr) / sizeof(arr[0]); 
 
     printf("Before sorting:\n");
