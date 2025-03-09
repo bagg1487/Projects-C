@@ -2,178 +2,87 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define SIZE 5
-#define MAX 500
-
-// Функция для обмена значений
-void swap(int *a, int *b) {
-    int temp = *a;
-    *a = *b;
-    *b = temp;
-}
-
-// Генерация массива
-void generateArray(int arr[], int n, int type) {
-    if (type == -1) { // Убывающий порядок
-        for (int i = 0; i < n; i++)
-            arr[i] = n - i;
-    } else if (type == 1) { // Возрастающий порядок
-        for (int i = 0; i < n; i++)
-            arr[i] = i + 1;
-    } else { // Случайный порядок
-        for (int i = 0; i < n; i++)
-            arr[i] = rand() % MAX;
+void generateKnuthSequence(int n, int sequence[], int *size) {
+    int h = 1, i = 0;
+    while (h < n) {
+        sequence[i++] = h;
+        h = 3 * h + 1;
     }
+    *size = i;
 }
 
-// Пузырьковая сортировка с подсчетом операций
-void bubbleSort(int arr[], int n, int *comparisons, int *swaps) {
-    *comparisons = 0;
-    *swaps = 0;
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
-            (*comparisons)++;
-            if (arr[j] > arr[j + 1]) {
-                swap(&arr[j], &arr[j + 1]);
-                (*swaps) += 3;
+void shellSort(int arr[], int n, int *M, int *C) {
+    int sequence[20], size;
+    generateKnuthSequence(n, sequence, &size);
+    
+    for (int g = size - 1; g >= 0; g--) {
+        int gap = sequence[g];
+        for (int i = gap; i < n; i++) {
+            int temp = arr[i];
+            int j;
+            (*M)++;
+            for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+                (*C)++;
+                arr[j] = arr[j - gap];
+                (*M)++;
             }
+            arr[j] = temp;
+            (*M)++;
         }
     }
 }
 
-// Шейкерная сортировка с подсчетом операций
-void shakerSort(int arr[], int n, int *comparisons, int *swaps) {
-    *comparisons = 0;
-    *swaps = 0;
-    int left = 0, right = n - 1;
-    int k = n;
-
-    do {
-        for (int j = right; j > left; j--) {
-            (*comparisons)++;
-            if (arr[j] < arr[j - 1]) {
-                swap(&arr[j], &arr[j - 1]);
-                (*swaps) += 3;
-                k = j;
-            }
-        }
-        left = k;
-
-        for (int j = left; j < right; j++) {
-            (*comparisons)++;
-            if (arr[j] > arr[j + 1]) {
-                swap(&arr[j], &arr[j + 1]);
-                (*swaps) += 3;
-                k = j;
-            }
-        }
-        right = k;
-    } while (left < right);
-}
-
-// Сортировка вставками с подсчетом операций
-void insertSort(int arr[], int n, int *comparisons, int *swaps) {
-    *comparisons = 0;
-    *swaps = 0;
+void insertionSort(int arr[], int n, int *M, int *C) {
     for (int i = 1; i < n; i++) {
-        int t = arr[i];
-        (*swaps)++;
+        int temp = arr[i];
         int j = i - 1;
-        while (j >= 0) {
-            (*comparisons)++;
-            if (t < arr[j]) {
-                arr[j + 1] = arr[j];
-                (*comparisons)++;
-                j--;
-            } else {
-                break;
-            }
+        (*M)++;
+        while (j >= 0 && arr[j] > temp) {
+            (*C)++;
+            arr[j + 1] = arr[j];
+            (*M)++;
+            j--;
         }
-        arr[j + 1] = t;
-        (*swaps)++;
+        arr[j + 1] = temp;
+        (*M)++;
     }
 }
 
-// Сортировка выбором с подсчетом операций
-void selectSort(int arr[], int n, int *comparisons, int *swaps) {
-    *comparisons = 0;
-    *swaps = 0;
-    for (int i = 0; i < n - 1; i++) {
-        int minIndex = i;
-        for (int j = i + 1; j < n; j++) {
-            (*comparisons)++;
-            if (arr[j] < arr[minIndex]) {
-                minIndex = j;
-            }
-        }
-        if (minIndex != i) {
-            swap(&arr[i], &arr[minIndex]);
-            (*swaps) += 3;
-        }
+void generateArray(int arr[], int n) {
+    for (int i = 0; i < n; i++) {
+        arr[i] = rand() % 1000;
     }
 }
 
 int main() {
     srand(time(NULL));
-    int sizes[SIZE] = {100, 200, 300, 400, 500};
-    int arr[MAX];
+    int sizes[] = {100, 200, 300, 400, 500};
+    int numSizes = sizeof(sizes) / sizeof(sizes[0]);
     
-    // Первая таблица: SelectSort, BubbleSort, ShakerSort, InsertSort (для случайных чисел)
-    printf("| n   | Select Sort (Случ) | Bubble Sort (Случ) | Shaker Sort (Случ) | Insert Sort (Случ) |\n");
-    printf("|-----|--------------------|--------------------|--------------------|--------------------|\n");
+    printf("| %-6s | %-25s | %-15s | %-15s |\n", "n", "h1 … hm по формуле Д.Кнута", "Insert Mф+Cф", "Shell Mф+Cф");
     
-    for (int i = 0; i < SIZE; i++) {
+    
+    for (int i = 0; i < numSizes; i++) {
         int n = sizes[i];
-        int comparisons, swaps;
+        int arr1[n], arr2[n];
+        int M_insert = 0, C_insert = 0, M_shell = 0, C_shell = 0;
         
-        // Сортировка выбором
-        generateArray(arr, n, 0);
-        selectSort(arr, n, &comparisons, &swaps);
-        int selectRand = comparisons + swaps;
+        generateArray(arr1, n);
+        for (int j = 0; j < n; j++) arr2[j] = arr1[j];
         
-        // Пузырьковая сортировка
-        generateArray(arr, n, 0);
-        bubbleSort(arr, n, &comparisons, &swaps);
-        int bubbleRand = comparisons + swaps;
+        insertionSort(arr1, n, &M_insert, &C_insert);
+        shellSort(arr2, n, &M_shell, &C_shell);
         
-        // Шейкерная сортировка
-        generateArray(arr, n, 0);
-        shakerSort(arr, n, &comparisons, &swaps);
-        int shakerRand = comparisons + swaps;
+        int sequence[20], size;
+        generateKnuthSequence(n, sequence, &size);
         
-        // Сортировка вставками
-        generateArray(arr, n, 0);
-        insertSort(arr, n, &comparisons, &swaps);
-        int insertRand = comparisons + swaps;
-        
-        // Вывод результатов
-        printf("| %3d | %18d | %18d | %18d | %18d |\n", n, selectRand, bubbleRand, shakerRand, insertRand);
+        printf("| %-6d | ", n);
+        for (int j = 0; j < size; j++) {
+            printf("%d ", sequence[j]);
+        }
+        printf("%*s | %-15d | %-7d |\n", 25 - (size * 2), "", M_insert + C_insert, M_shell + C_shell);
     }
-
-    // Вторая таблица: InsertSort (остается без изменений)
-    printf("\n| n   | Insert Sort (Убыв) | Insert Sort (Случ) | Insert Sort (Возр) |\n");
-    printf("|-----|--------------------|--------------------|--------------------|\n");
     
-    for (int i = 0; i < SIZE; i++) {
-        int n = sizes[i];
-        int comparisons, swaps;
-        
-        // Сортировка вставками
-        generateArray(arr, n, -1);
-        insertSort(arr, n, &comparisons, &swaps);
-        int insertDesc = comparisons + swaps;
-        
-        generateArray(arr, n, 0);
-        insertSort(arr, n, &comparisons, &swaps);
-        int insertRand = comparisons + swaps;
-        
-        generateArray(arr, n, 1);
-        insertSort(arr, n, &comparisons, &swaps);
-        int insertAsc = comparisons + swaps;
-        
-        // Вывод результатов
-        printf("| %3d | %18d | %18d | %18d |\n", n, insertDesc, insertRand, insertAsc);
-    }
-
+    
     return 0;
 }
