@@ -35,5 +35,5 @@ void QuickSort(int n, struct Student *students, int (*compare)(struct Student, s
     for (int i = 0; i < n; i++) printStudentInfo(students[i]);
 }
 int main(){
-    //lol
+    
 }
