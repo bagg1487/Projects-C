@@ -28,3 +28,6 @@ int main(int argc, char *argv[]){
         exit(1);
     }
 }
+//gcc proga3.c -lm
+//./a.out proga3.txt
+//cat proga3.txt
