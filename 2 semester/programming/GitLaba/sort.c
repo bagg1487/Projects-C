@@ -1,39 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
-void swap(struct Student *a, struct Student *b) {
-    struct Student temp = *a;
+
+void swap(int *a, int *b) {
+    int temp = *a;
     *a = *b;
     *b = temp;
 }
 
-int partition(struct Student *students, int low, int high, int (*compare)(struct Student, struct Student)) {
-    int pivot = students[high].sum; 
+
+int partition(int *arr, int low, int high) {
+    int pivot = arr[high]; 
     int i = low - 1;
 
     for (int j = low; j < high; j++) {
-        if (compare(students[j], students[high]) < 0) { 
+        if (arr[j] < pivot) { 
             i++;
-            swap(&students[i], &students[j]);
+            swap(&arr[i], &arr[j]);
         }
     }
-    swap(&students[i + 1], &students[high]);
+    swap(&arr[i + 1], &arr[high]); 
     return i + 1;
 }
 
-void quicksort(struct Student *students, int low, int high, int (*compare)(struct Student, struct Student)) {
+void quicksort(int *arr, int low, int high) {
     if (low < high) {
-        int pi = partition(students, low, high, compare);
-        quicksort(students, low, pi - 1, compare);
-        quicksort(students, pi + 1, high, compare);
+        int pi = partition(arr, low, high);
+        quicksort(arr, low, pi - 1);      
+        quicksort(arr, pi + 1, high);      
     }
 }
 
-void QuickSort(int n, struct Student *students, int (*compare)(struct Student, struct Student)) {
-    for (int i = 0; i < n; i++) printStudentInfo(students[i]);
-    printf("-----------------------------------------------------------------------\n");
-    quicksort(students, 0, n - 1, compare);
-    for (int i = 0; i < n; i++) printStudentInfo(students[i]);
+void printArray(int *arr, int n) {
+    for (int i = 0; i < n; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
 }
-int main(){
-    
+
+int main() {
+    int a[] = {4, 2}; 
+    int n = sizeof(arr) / sizeof(arr[0]); 
+
+    printf("Before sorting:\n");
+    printArray(arr, n);
+
+  
+    quicksort(arr, 0, n - 1);
+
+    printf("After sorting:\n");
+    printArray(arr, n);
+
 }
