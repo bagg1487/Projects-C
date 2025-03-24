@@ -1,128 +1,80 @@
 #include <stdio.h>
 #include <string.h>
 
-    struct phone_direct {
-        char name[50];
-        char surname[50];
-        char phoneNumber[15];
-        int age;
-    };
-    typedef struct phone_direct phone_direct;
+struct Contact {
+    char name[50];
+    char lastname[50];
+    int age;
+    int number;
+};
 
-    enum key{
-        sort_name,
-        sort_surname,
-        sort_phoneNumber,
-        sort_age
-    };
-    enum direction{
-        sort_increasing,
-        sort_decreasing
-    };
+int sortKey = 1;  
+int ascending = 1; 
 
-    typedef enum key key;
-    typedef enum direction dir;
+int compareContacts(struct Contact a, struct Contact b) {
+    int result = 0;
 
-    // Функция для сравнения двух записей по составному ключу (surname + name)
-    int compareRecords(const phone_direct *a, const phone_direct *b, key key, dir dir){
-        int result = 0;
-
-        switch (key) {
-            case sort_name:
-                result = strcmp(a->name, b->name);
-                break;
-            case sort_surname:
-                result = strcmp(a->surname, b->surname);
-                break;
-            case sort_phoneNumber:
-                result = strcmp(a->phoneNumber, b->phoneNumber);
-                break;
-            case sort_age:
-                result = a->age - b->age;
-                break;
+    if (sortKey == 1) { 
+        result = strcmp(a.lastname, b.lastname);
+        if (result == 0) {
+            result = strcmp(a.name, b.name);
         }
-        if (dir == sort_decreasing){
-            result = -result;
-
-        }
-        return result;
-    }
-
-   void SelectSort(phone_direct arr[], int n, key key, dir dir){
-    for(int i = 0; i < n - 1; i ++){
-        int k = i;
-        for (int j = i + 1; j < n; j ++){
-            if (compareRecords(&arr[j], &arr[k], key, dir) < 0){
-                k = j;
-            }
-        } 
-        phone_direct temp = arr[i];
-        arr[i] = arr[k];
-        arr[k] = temp;
-        }
-    }
- 
-    void printRecords(phone_direct arr[], int n){
-        for (int i = 0; i < n; i ++){
-            printf("%s %s: %s, Возраст: %d\n", arr[i].surname, arr[i].name, arr[i].phoneNumber, arr[i].age);
+    } else if (sortKey == 2) { 
+        result = a.age - b.age;
+        if (result == 0) {
+            result = a.number - b.number;
         }
     }
 
-int main(){
+    return ascending ? result : -result;
+}
 
-    phone_direct records[] = {
-        {"Сергей", "Демин", "8-983-123-78-73", 20},
-        {"Петр", "Демин", "8-929-383-22-06", 17},
-        {"Майкл", "Синицын", "8-952-949-91-31", 26},
-        {"Андрюша", "Кутенков", "8-905-095-79-81", 19}
+void InsertSort(struct Contact contacts[], int size) {
+    for (int i = 1; i < size; i++) {
+        struct Contact temp = contacts[i];
+        int j = i - 1;
+
+        while (j >= 0 && compareContacts(contacts[j], temp) > 0) {
+            contacts[j + 1] = contacts[j];
+            j--;
+        }
+
+        contacts[j + 1] = temp;
+    }
+}
+
+void printContacts(struct Contact contacts[], int size) {
+    printf("Телефонный справочник:\n");
+    for (int i = 0; i < size; i++) {
+        printf("%s %s, Возраст: %d, Номер: %d\n", 
+               contacts[i].lastname, contacts[i].name, contacts[i].age, contacts[i].number);
+    }
+    printf("\n");
+}
+
+int main() {
+    struct Contact contacts[] = {
+        {"Влад", "Погорелов", 20, 893213},
+        {"Илья", "Погорелов", 33, 123513},
+        {"Артем", "Добромилов", 18, 763421},
+        {"Рома", "Петров", 19, 345635},
     };
 
-    int n = sizeof(records) / sizeof(records[0]); 
+    int size = sizeof(contacts) / sizeof(contacts[0]);
 
-    printf("Исходный массив:\n");
-    printRecords(records, n);
-    
-    key key;
-    printf("\nВыберите ключ сортировки:\n");
-    printf("1 - По имени\n");
-    printf("2 - По фамилии\n");
-    printf("3 - По номеру телефона\n");
-    printf("4 - По возрасту\n");
-    int key_choice;
-    scanf("%d", &key_choice);
-    switch (key_choice) {
-        case 1:
-            key = sort_name;
-            break;
-        case 2:
-            key = sort_surname;
-            break;
-        case 3:
-            key = sort_phoneNumber;
-            break;
-        case 4:
-            key = sort_age;
-            break;
-    }
+    printf("Исходный справочник:\n");
+    printContacts(contacts, size);
 
-    
-    dir direction;
-    printf("\nВыберите направление сортировки:\n");
-    printf("1 - По возрастанию\n");
-    printf("2 - По убыванию\n");
-    int dir_choice;
-    scanf("%d", &dir_choice);
-    switch (dir_choice) {
-        case 1:
-            direction = sort_increasing;
-            break;
-        case 2:
-            direction = sort_decreasing;
-            break;
-    }
+    printf("Выберите ключ сортировки (1 - 'Фамилия + Имя', 2 - 'Возраст + Номер'): ");
+    scanf("%d", &sortKey);
 
-    SelectSort(records, n, key, direction);
+    printf("Выберите направление сортировки (1 - по возрастанию, 0 - по убыванию): ");
+    scanf("%d", &ascending);
 
-    printf("\nОтсортированный массив:\n");
-    printRecords(records, n);
+    InsertSort(contacts, size);
+
+    printf("Отсортированный справочник:\n");
+    printContacts(contacts, size);
+
+    return 0;
 }
