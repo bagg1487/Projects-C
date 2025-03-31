@@ -10,7 +10,6 @@ struct Contact {
     int number;
 };
 
-// Вывод контактов через индексный массив
 void printContacts(struct Contact contacts[], int index[], int size) {
     for (int i = 0; i < size; i++) {
         struct Contact c = contacts[index[i]];
@@ -19,24 +18,24 @@ void printContacts(struct Contact contacts[], int index[], int size) {
     printf("\n");
 }
 
-// Вывод индексного массива
-void printIndexArray(int index[], int size) {
-    printf("Индексный массив: [ ");
-    for (int i = 0; i < size; i++) {
-        printf("%d ", index[i]);
-    }
+void printIndexArrays(int indexByName[], int indexByAge[], int size) {
+    printf("Индексный массив (по имени): [ ");
+    for (int i = 0; i < size; i++) printf("%d ", indexByName[i]);
     printf("]\n");
+    
+    printf("Индексный массив (по возрасту): [ ");
+    for (int i = 0; i < size; i++) printf("%d ", indexByAge[i]);
+    printf("]\n\n");
 }
 
-// Сортировка вставками по фамилии и имени
 void sortIndexByName(struct Contact contacts[], int index[], int size) {
     for (int i = 1; i < size; i++) {
         int temp = index[i];
         int j = i - 1;
         
         while (j >= 0 && (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) > 0 || 
-                         (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) == 0 &&
-                          strcmp(contacts[index[j]].name, contacts[temp].name) > 0))) {
+             (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) == 0 &&
+              strcmp(contacts[index[j]].name, contacts[temp].name) > 0)) {
             index[j + 1] = index[j];
             j--;
         }
@@ -44,15 +43,14 @@ void sortIndexByName(struct Contact contacts[], int index[], int size) {
     }
 }
 
-// Сортировка вставками по фамилии и возрасту
 void sortIndexByLastNameAndAge(struct Contact contacts[], int index[], int size) {
     for (int i = 1; i < size; i++) {
         int temp = index[i];
         int j = i - 1;
         
         while (j >= 0 && (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) > 0 || 
-                         (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) == 0 &&
-                          contacts[index[j]].age > contacts[temp].age))) {
+             (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) == 0 &&
+              contacts[index[j]].age > contacts[temp].age))) {
             index[j + 1] = index[j];
             j--;
         }
@@ -60,15 +58,14 @@ void sortIndexByLastNameAndAge(struct Contact contacts[], int index[], int size)
     }
 }
 
-// Сортировка вставками по фамилии и номеру
 void sortIndexByLastNameAndNumber(struct Contact contacts[], int index[], int size) {
     for (int i = 1; i < size; i++) {
         int temp = index[i];
         int j = i - 1;
         
         while (j >= 0 && (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) > 0 || 
-                         (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) == 0 &&
-                          contacts[index[j]].number > contacts[temp].number))) {
+             (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) == 0 &&
+              contacts[index[j]].number > contacts[temp].number))) {
             index[j + 1] = index[j];
             j--;
         }
@@ -76,15 +73,14 @@ void sortIndexByLastNameAndNumber(struct Contact contacts[], int index[], int si
     }
 }
 
-// Сортировка вставками по имени и номеру
 void sortIndexByNameAndNumber(struct Contact contacts[], int index[], int size) {
     for (int i = 1; i < size; i++) {
         int temp = index[i];
         int j = i - 1;
         
         while (j >= 0 && (strcmp(contacts[index[j]].name, contacts[temp].name) > 0 || 
-                         (strcmp(contacts[index[j]].name, contacts[temp].name) == 0 &&
-                          contacts[index[j]].number > contacts[temp].number))) {
+             (strcmp(contacts[index[j]].name, contacts[temp].name) == 0 &&
+              contacts[index[j]].number > contacts[temp].number)) {
             index[j + 1] = index[j];
             j--;
         }
@@ -92,7 +88,6 @@ void sortIndexByNameAndNumber(struct Contact contacts[], int index[], int size) 
     }
 }
 
-// Сортировка вставками по возрасту
 void sortIndexByAge(struct Contact contacts[], int index[], int size) {
     for (int i = 1; i < size; i++) {
         int temp = index[i];
@@ -106,7 +101,6 @@ void sortIndexByAge(struct Contact contacts[], int index[], int size) {
     }
 }
 
-// Сортировка вставками по номеру
 void sortIndexByNumber(struct Contact contacts[], int index[], int size) {
     for (int i = 1; i < size; i++) {
         int temp = index[i];
@@ -139,11 +133,7 @@ int main() {
         {"Дмитрий", "Петров", 13, 26494},
     };
 
-    // Два индексных массива (для разных сортировок)
-    int indexByName[SIZE];
-    int indexByAge[SIZE];
-
-    // Инициализация индексных массивов
+    int indexByName[SIZE], indexByAge[SIZE];
     for (int i = 0; i < SIZE; i++) {
         indexByName[i] = i;
         indexByAge[i] = i;
@@ -151,62 +141,61 @@ int main() {
 
     printf("\nТекущий справочник:\n");
     printContacts(contacts, indexByName, SIZE);
-
-    // Вывод индексных массивов до сортировки
-    printf("Индексный массив (до сортировки по имени):\n");
-    printIndexArray(indexByName, SIZE);
-    printf("Индексный массив (до сортировки по возрасту):\n");
-    printIndexArray(indexByAge, SIZE);
+    printf("Индексные массивы ДО сортировки:\n");
+    printIndexArrays(indexByName, indexByAge, SIZE);
 
     int choice;
     displayMenu();
     scanf("%d", &choice);
 
-    // Восстанавливаем исходные индексы перед сортировкой
-    for (int i = 0; i < SIZE; i++) {
-        indexByName[i] = i;
-    }
+    // Создаем копии для сохранения исходного порядка
+    int originalIndexByName[SIZE], originalIndexByAge[SIZE];
+    memcpy(originalIndexByName, indexByName, sizeof(indexByName));
+    memcpy(originalIndexByAge, indexByAge, sizeof(indexByAge));
 
     switch(choice) {
         case 1:
             sortIndexByName(contacts, indexByName, SIZE);
-            printf("\nСправочник отсортирован по фамилии и имени:\n");
+            printf("\nСортировка по фамилии и имени:\n");
             break;
         case 2:
             sortIndexByLastNameAndAge(contacts, indexByName, SIZE);
-            printf("\nСправочник отсортирован по фамилии и возрасту:\n");
+            printf("\nСортировка по фамилии и возрасту:\n");
             break;
         case 3:
             sortIndexByLastNameAndNumber(contacts, indexByName, SIZE);
-            printf("\nСправочник отсортирован по фамилии и номеру:\n");
+            printf("\nСортировка по фамилии и номеру:\n");
             break;
         case 4:
             sortIndexByNameAndNumber(contacts, indexByName, SIZE);
-            printf("\nСправочник отсортирован по имени и номеру:\n");
+            printf("\nСортировка по имени и номеру:\n");
             break;
         case 5:
             sortIndexByAge(contacts, indexByAge, SIZE);
-            printf("\nСправочник отсортирован по возрасту:\n");
+            printf("\nСортировка по возрасту:\n");
             break;
         case 6:
             sortIndexByNumber(contacts, indexByName, SIZE);
-            printf("\nСправочник отсортирован по номеру:\n");
+            printf("\nСортировка по номеру:\n");
             break;
         default:
-            printf("Неверный выбор. Попробуйте снова.\n");
+            printf("Неверный выбор!\n");
             return 1;
     }
 
-    // Вывод отсортированного справочника и индексного массива
+    // Вывод результатов
     if (choice >= 1 && choice <= 4 || choice == 6) {
         printContacts(contacts, indexByName, SIZE);
-        printf("Индексный массив после сортировки:\n");
-        printIndexArray(indexByName, SIZE);
     } else if (choice == 5) {
         printContacts(contacts, indexByAge, SIZE);
-        printf("Индексный массив после сортировки:\n");
-        printIndexArray(indexByAge, SIZE);
     }
+
+    printf("\nИндексные массивы ПОСЛЕ сортировки:\n");
+    printIndexArrays(indexByName, indexByAge, SIZE);
+
+    // Восстановление исходных массивов
+    memcpy(indexByName, originalIndexByName, sizeof(indexByName));
+    memcpy(indexByAge, originalIndexByAge, sizeof(indexByAge));
 
     return 0;
 }
