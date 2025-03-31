@@ -18,6 +18,13 @@ void printContacts(struct Contact contacts[], int index[], int size) {
     printf("\n");
 }
 
+void printArray(int index[]) {
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d", index[i]);
+    }
+    printf("\n");
+}
+
 void sortIndexByName(struct Contact contacts[], int index[], int size) {
     for (int i = 1; i < size; i++) {
         int temp = index[i];
@@ -33,57 +40,14 @@ void sortIndexByName(struct Contact contacts[], int index[], int size) {
     }
 }
 
-void sortIndexByLastNameAndAge(struct Contact contacts[], int index[], int size) {
-    for (int i = 1; i < size; i++) {
-        int temp = index[i];
-        int j = i - 1;
-        
-        while (j >= 0 && (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) > 0 || 
-                         (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) == 0 &&
-                          contacts[index[j]].age > contacts[temp].age))) {
-            index[j + 1] = index[j];
-            j--;
-        }
-        index[j + 1] = temp;
-    }
-}
-
-void sortIndexByLastNameAndNumber(struct Contact contacts[], int index[], int size) {
-    for (int i = 1; i < size; i++) {
-        int temp = index[i];
-        int j = i - 1;
-        
-        while (j >= 0 && (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) > 0 || 
-                         (strcmp(contacts[index[j]].lastname, contacts[temp].lastname) == 0 &&
-                          contacts[index[j]].number > contacts[temp].number))) {
-            index[j + 1] = index[j];
-            j--;
-        }
-        index[j + 1] = temp;
-    }
-}
-
-void sortIndexByNameAndNumber(struct Contact contacts[], int index[], int size) {
-    for (int i = 1; i < size; i++) {
-        int temp = index[i];
-        int j = i - 1;
-        
-        while (j >= 0 && (strcmp(contacts[index[j]].name, contacts[temp].name) > 0 || 
-                         (strcmp(contacts[index[j]].name, contacts[temp].name) == 0 &&
-                          contacts[index[j]].number > contacts[temp].number))) {
-            index[j + 1] = index[j];
-            j--;
-        }
-        index[j + 1] = temp;
-    }
-}
-
 void sortIndexByAge(struct Contact contacts[], int index[], int size) {
     for (int i = 1; i < size; i++) {
         int temp = index[i];
         int j = i - 1;
         
-        while (j >= 0 && contacts[index[j]].age > contacts[temp].age) {
+        while (j >= 0 && (contacts[index[j]].age > contacts[temp].age || 
+                         (contacts[index[j]].age == contacts[temp].age &&
+                          contacts[index[j]].number > contacts[temp].number))) {
             index[j + 1] = index[j];
             j--;
         }
@@ -91,78 +55,37 @@ void sortIndexByAge(struct Contact contacts[], int index[], int size) {
     }
 }
 
-void sortIndexByNumber(struct Contact contacts[], int index[], int size) {
-    for (int i = 1; i < size; i++) {
-        int temp = index[i];
-        int j = i - 1;
-        
-        while (j >= 0 && contacts[index[j]].number > contacts[temp].number) {
-            index[j + 1] = index[j];
-            j--;
-        }
-        index[j + 1] = temp;
-    }
-}
 
-void displayMenu() {
-    printf("\nВыберите вариант сортировки:\n");
-    printf("1. По фамилии и имени\n");
-    printf("2. По фамилии и возрасту\n");
-    printf("3. По фамилии и номеру\n");
-    printf("4. По имени и номеру\n");
-    printf("Ваш выбор: ");
-}
 
 int main() {
     struct Contact contacts[SIZE] = {
-        {"Иван", "Петров", 25, 91357},
-        {"Кирилл", "Кушнарев", 31, 83469},
-        {"Иван", "Алексеев", 95, 71235},
-        {"Дмитрий", "Петров", 13, 26494},
+        {"Влад", "Погорелов", 18, 893213},
+        {"Илья", "Погорелов", 33, 123513},
+        {"Артем", "Добромилов", 18, 763421},
+        {"Рома", "Петров", 19, 345635},
     };
 
-    int index[SIZE];
+    int indexByName[SIZE], indexByAge[SIZE], index[SIZE];
     for (int i = 0; i < SIZE; i++) {
+        indexByName[i] = i;
+        indexByAge[i] = i;
         index[i] = i;
     }
 
-    int choice;
-
-    printf("\nТекущий справочник:\n");
+    printf("Исходный справочник:\n");
+    printArray(index);
     printContacts(contacts, index, SIZE);
-    
-    displayMenu();
-    scanf("%d", &choice);
-    
-    // Восстанавливаем исходный порядок перед каждой сортировкой
-    for (int i = 0; i < SIZE; i++) {
-        index[i] = i;
-    }
-    
-    switch(choice) {
-        case 1:
-            sortIndexByName(contacts, index, SIZE);
-            printf("\nСправочник отсортирован по фамилии и имени:\n");
-            break;
-        case 2:
-            sortIndexByLastNameAndAge(contacts, index, SIZE);
-            printf("\nСправочник отсортирован по фамилии и возрасту:\n");
-            break;
-        case 3:
-            sortIndexByLastNameAndNumber(contacts, index, SIZE);
-            printf("\nСправочник отсортирован по фамилии и номеру:\n");
-            break;
-        case 4:
-            sortIndexByNameAndNumber(contacts, index, SIZE);
-            printf("\nСправочник отсортирован по имени и номеру:\n");
-            break;
-        
-        default:
-            printf("Неверный выбор. Попробуйте снова.\n");
-    }
-    
-    if (choice >= 1 && choice <= 6) {
-        printContacts(contacts, index, SIZE);
-    }
 
+    sortIndexByName(contacts, indexByName, SIZE);
+    sortIndexByAge(contacts, indexByAge, SIZE);
+
+    printf("Справочник отсортирован по фамилии и имени:\n");
+    printArray(indexByName);
+    printContacts(contacts, indexByName, SIZE);
+
+    printf("Справочник отсортирован по возрасту и номеру:\n");
+    printArray(indexByAge);
+    printContacts(contacts, indexByAge, SIZE);
+    
+    return 0;
 }
