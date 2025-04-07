@@ -1,149 +1,163 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 
 int comparisons = 0;
 int swaps = 0;
 
-void reset_counters() {
+void piram(int arr[], int L, int R) {
+    int x = arr[L];
+    int i = L;
+    while (1) {
+        int j = 2 * i;
+        if (j > R)
+            break;
+        if (j < R) {
+            if (arr[j + 1] > arr[j]) {
+                comparisons++;
+                j = j + 1;
+            }
+        }
+        if (x >= arr[j]) {
+            comparisons++;
+            break;
+        }
+        swaps++;
+        arr[i] = arr[j];
+        i = j;
+    }
+    if (i != L) {
+        swaps++;
+    }
+    swaps++;
+    arr[i] = x;
+}
+
+void buildHeap(int arr[], int n) {
+    for (int start = n/2 - 1; start >= 0; start--) {
+        piram(arr, start, n - 1);
+    }
+}
+
+void generateArray(int arr[], int n, int type) {
+    switch(type) {
+        case 0:
+            for (int i = 0; i < n; i++) arr[i] = n - i;
+            break;
+        case 1:
+            for (int i = 0; i < n; i++) arr[i] = rand() % (2*n);
+            break;
+        case 2:
+            for (int i = 0; i < n; i++) arr[i] = i + 1;
+            break;
+    }
+}
+
+void testHeapConstruction(int n) {
+    int arr[n];
+    int theoretical = 2 * log2(n)+log2(n)+3;
+    
+    printf("| %4d ", n);
+    
+    for (int type = 0; type < 3; type++) {
+        generateArray(arr, n, type);
+        
+        comparisons = 0;
+        swaps = 0;
+        piram(arr,1, n);
+        
+        printf("| %7d ", comparisons + swaps);
+    }
+    printf("| %7d |\n", theoretical);
+}
+
+void siftDown(int arr[], int start, int end) {
+    int root = start;
+    
+    while (2 * root + 1 <= end) {
+        int child = 2 * root + 1;
+        int swapIdx = root;
+        
+        comparisons++;
+        if (arr[swapIdx] < arr[child]) {
+            swapIdx = child;
+        }
+        
+        if (child + 1 <= end) {
+            comparisons++;
+            if (arr[swapIdx] < arr[child + 1]) {
+                swapIdx = child + 1;
+            }
+        }
+        
+        if (swapIdx == root) {
+            return;
+        } else {
+            swaps++;
+            int temp = arr[root];
+            arr[root] = arr[swapIdx];
+            arr[swapIdx] = temp;
+            root = swapIdx;
+        }
+    }
+}
+
+void heapSort(int arr[], int n) {
     comparisons = 0;
     swaps = 0;
-}
-
-void heapify(int arr[], int n, int i) {
-    int largest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
-
-    if (left < n) {
-        comparisons++;
-        if (arr[left] > arr[largest]) {
-            largest = left;
-        }
+    
+    for (int start = n/2 - 1; start >= 0; start--) {
+        siftDown(arr, start, n - 1);
     }
-
-    if (right < n) {
-        comparisons++;
-        if (arr[right] > arr[largest]) {
-            largest = right;
-        }
-    }
-
-    if (largest != i) {
-        swaps++;
-        int temp = arr[i];
-        arr[i] = arr[largest];
-        arr[largest] = temp;
-        heapify(arr, n, largest);
-    }
-}
-
-void build_heap(int arr[], int n) {
-    for (int i = n / 2 - 1; i >= 0; i--) {
-        heapify(arr, n, i);
-    }
-}
-
-void heap_sort(int arr[], int n) {
-    build_heap(arr, n);
-    for (int i = n - 1; i > 0; i--) {
+    
+    for (int end = n - 1; end > 0; end--) {
         swaps++;
         int temp = arr[0];
-        arr[0] = arr[i];
-        arr[i] = temp;
-        heapify(arr, i, 0);
+        arr[0] = arr[end];
+        arr[end] = temp;
+        
+        siftDown(arr, 0, end - 1);
     }
 }
 
-void print_array(int arr[], int n) {
-    for (int i = 0; i < n; i++) {
-        printf("%d ", arr[i]);
+void testHeapSort(int n) {
+    int arr[n];
+    
+    printf("| %4d ", n);
+    
+    for (int type = 0; type < 3; type++) {
+        generateArray(arr, n, type);
+        heapSort(arr, n);
+        printf("| %8d ", comparisons + swaps);
     }
-    printf("\n");
-}
-
-void generate_decreasing(int arr[], int n) {
-    for (int i = 0; i < n; i++) {
-        arr[i] = n - i;
-    }
-}
-
-void generate_random(int arr[], int n) {
-    for (int i = 0; i < n; i++) {
-        arr[i] = rand() % 1000;
-    }
-}
-
-void generate_increasing(int arr[], int n) {
-    for (int i = 0; i < n; i++) {
-        arr[i] = i + 1;
-    }
+    printf("|\n");
 }
 
 int main() {
     srand(time(NULL));
+    
+    printf("Трудоемкость построения пирамиды\n");
+    printf("+------+-----------+-----------+-----------+----------+\n");
+    printf("|  N   | Убывающий | Случайный | Возрастаю | Теория   |\n");
+    printf("+------+-----------+-----------+-----------+----------+\n");
+    
     int sizes[] = {100, 200, 300, 400, 500};
-    int num_sizes = sizeof(sizes) / sizeof(sizes[0]);
-
-    printf("Трудоемкость построения пирамиды:\n");
-    printf("| N    | M+C теоретич. | Мфакт + Cфакт (Убыв.) | Мфакт + Cфакт (Случ.) | Мфакт + Cфакт (Возр.) |\n");
-    printf("|------|---------------|-----------------------|-----------------------|-----------------------|\n");
-
-    for (int i = 0; i < num_sizes; i++) {
-        int n = sizes[i];
-        int* arr = (int*)malloc(n * sizeof(int));
-
-        // Убывающий массив
-        generate_decreasing(arr, n);
-        reset_counters();
-        build_heap(arr, n);
-        int dec_mc = swaps + comparisons;
-
-        // Случайный массив
-        generate_random(arr, n);
-        reset_counters();
-        build_heap(arr, n);
-        int rand_mc = swaps + comparisons;
-
-        // Возрастающий массив
-        generate_increasing(arr, n);
-        reset_counters();
-        build_heap(arr, n);
-        int inc_mc = swaps + comparisons;
-
-        printf("| %-4d | %-13d | %-21d | %-21d | %-21d |\n", n, 2 * n, dec_mc, rand_mc, inc_mc);
-        free(arr);
+    for (int i = 0; i < 5; i++) {
+        testHeapConstruction(sizes[i]);
     }
-
-    printf("\nТрудоемкость пирамидальной сортировки:\n");
-    printf("| N    | HeapSort (Mф + Cф) (Убыв.) | HeapSort (Mф + Cф) (Случ.) | HeapSort (Mф + Cф) (Возр.) |\n");
-    printf("|------|----------------------------|----------------------------|----------------------------|\n");
-
-    for (int i = 0; i < num_sizes; i++) {
-        int n = sizes[i];
-        int* arr = (int*)malloc(n * sizeof(int));
-
-        // Убывающий массив
-        generate_decreasing(arr, n);
-        reset_counters();
-        heap_sort(arr, n);
-        int dec_mc = swaps + comparisons;
-
-        // Случайный массив
-        generate_random(arr, n);
-        reset_counters();
-        heap_sort(arr, n);
-        int rand_mc = swaps + comparisons;
-
-        // Возрастающий массив
-        generate_increasing(arr, n);
-        reset_counters();
-        heap_sort(arr, n);
-        int inc_mc = swaps + comparisons;
-
-        printf("| %-4d | %-26d | %-26d | %-26d |\n", n, dec_mc, rand_mc, inc_mc);
-        free(arr);
+    
+    printf("+------+-----------+-----------+-----------+----------+\n");
+    
+    printf("\nТрудоемкость пирамидальной сортировки\n");
+    printf("+------+-----------+-----------+-----------+\n");
+    printf("|  N   |  Убыв.    |  Возр.    |  Случ.    |\n");
+    printf("+------+-----------+-----------+-----------+\n");
+    
+    for (int i = 0; i < 5; i++) {
+        testHeapSort(sizes[i]);
     }
-
+    
+    printf("+------+-----------+-----------+-----------+\n");
     return 0;
 }
