@@ -1,8 +1,13 @@
 **for 3**
+
 gcc -c laba_10_other.c -o laba_10_other.o
+
 ar rc liblaba10.a laba_10_other.o
+
 gcc -c laba_10_main.c -o laba_10_main.o
+
 gcc laba_10_main.o -L. -llaba10 -o program
+
 ./program
 **for 4**
 gcc laba_10_main.c -c && gcc laba_10_other.c -c
