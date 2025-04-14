@@ -10,5 +10,5 @@ gcc --shared laba_10_other.o -o libdynamiclaba10.so
 gcc laba_10_main.o -o prog -L. -ldynamiclaba10 -Wl,-rpath,.
 for 5
 mkdir build && cd build
-cmake ..
-make -D dynamic/static
+cmake -DTYPE=STATIC/SHARED ..
+make
