@@ -25,3 +25,5 @@ mkdir build && cd build
 cmake -DTYPE=STATIC/SHARED ..
 
 make
+
+P.S. STATIC/SHARED - выбор библиотеки, статическая/динамическая
