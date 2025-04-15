@@ -11,16 +11,24 @@ struct Contact {
 int sortKey = 1;  
 int ascending = 1; 
 
-int compareContacts(struct Contact a, struct Contact b) {
+int less(struct Contact a, struct Contact b) {
     int result = 0;
 
     if (sortKey == 1) { 
+        // Сортировка по Фамилии + Имени
         result = strcmp(a.lastname, b.lastname);
         if (result == 0) {
             result = strcmp(a.name, b.name);
         }
     } else if (sortKey == 2) { 
-        result = a.age - b.age;
+        // Сортировка по Фамилии + Номеру
+        result = strcmp(a.lastname, b.lastname);
+        if (result == 0) {
+            result = a.number - b.number;
+        }
+    } else if (sortKey == 3) { 
+        // Сортировка по Имени + Номеру
+        result = strcmp(a.name, b.name);
         if (result == 0) {
             result = a.number - b.number;
         }
@@ -34,7 +42,7 @@ void InsertSort(struct Contact contacts[], int size) {
         struct Contact temp = contacts[i];
         int j = i - 1;
 
-        while (j >= 0 && compareContacts(contacts[j], temp) > 0) {
+        while (j >= 0 && less(contacts[j], temp) > 0) {
             contacts[j + 1] = contacts[j];
             j--;
         }
@@ -65,7 +73,10 @@ int main() {
     printf("Исходный справочник:\n");
     printContacts(contacts, size);
 
-    printf("Выберите ключ сортировки (1 - 'Фамилия + Имя', 2 - 'Возраст + Номер'): ");
+    printf("Выберите ключ сортировки:\n");
+    printf("1 - Фамилия + Имя\n");
+    printf("2 - Фамилия + Номер\n");
+    printf("3 - Имя + Номер\n");
     scanf("%d", &sortKey);
 
     printf("Выберите направление сортировки (1 - по возрастанию, 0 - по убыванию): ");
