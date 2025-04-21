@@ -152,94 +152,89 @@ void clearStack(Stack* s) {
         current = current->next;
         free(temp);
     }
-    s->top = NULL;
-}int main() {
+    s->top = NULL;}
+int main() {
+    int n = 10;
     Stack s;
     Queue q;
     initStack(&s);
     initQueue(&q);
 
-    printf("Операции со стеком\n");
+    printf("=== ОПЕРАЦИИ СО СТЕКОМ ===\n");
     
-    printf("\nСтек по убыванию:\n");
-    fillStackAscending(&s, 5);
-    printf("Элементов: ");
+    printf("\n1. Стек по убыванию:\n");
+    fillStackAscending(&s, n);
+    printf("Элементы: ");
     printList(s.top);
-    printf("Контрольная сумма: %d\n", calculateChecksum(s.top));
-    printf("Количество серий: %d\n", countSeries(s.top));
-    printf("Прямой порядок: ");
+    printf("Контр. сумма: %d\n", calculateChecksum(s.top));
+    printf("Серии: %d\n", countSeries(s.top));
+    printf("Прямой порядок:  ");
     printListForwardRecursive(s.top);
     printf("Обратный порядок: ");
     printListBackwardRecursive(s.top);
     clearStack(&s);
-    printf("\n");
 
-    printf("\nСтек по возрастанию:\n");
-    fillStackDescending(&s, 5);
-    printf("Элементов: ");
+    printf("\n2. Стек по возрастанию:\n");
+    fillStackDescending(&s, n);
+    printf("Элементы: ");
     printList(s.top);
-    printf("Контрольная сумма: %d\n", calculateChecksum(s.top));
-    printf("Количество серий: %d\n", countSeries(s.top));
-    printf("Прямой порядок: ");
+    printf("Контр. сумма: %d\n", calculateChecksum(s.top));
+    printf("Серии: %d\n", countSeries(s.top));
+    printf("Прямой порядок:  ");
     printListForwardRecursive(s.top);
     printf("Обратный порядок: ");
     printListBackwardRecursive(s.top);
     clearStack(&s);
-    printf("\n");
 
-    printf("\nРандомный стек:\n");
-    fillStackRandom(&s, 5, 1, 10);
-    printf("Элементов: ");
+    printf("\n3. Случайный стек:\n");
+    fillStackRandom(&s, n, 1, 10);
+    printf("Элементы: ");
     printList(s.top);
-    printf("Контрольная сумма: %d\n", calculateChecksum(s.top));
-    printf("Количество серий: %d\n", countSeries(s.top));
-    printf("Прямой порядок: ");
+    printf("Контр. сумма: %d\n", calculateChecksum(s.top));
+    printf("Серии: %d\n", countSeries(s.top));
+    printf("Прямой порядок:  ");
     printListForwardRecursive(s.top);
     printf("Обратный порядок: ");
     printListBackwardRecursive(s.top);
     clearStack(&s);
-    printf("\n");
 
-    printf("\nОперации с очередью\n");
+    printf("\n=== ОПЕРАЦИИ С ОЧЕРЕДЬЮ ===\n");
     
-    printf("\nОчередь по убыванию:\n");
-    fillQueueAscending(&q, 5);
-    printf("Элементов: ");
+    printf("\n1. Очередь по убыванию:\n");
+    fillQueueAscending(&q, n);
+    printf("Элементы: ");
     printList(q.front);
-    printf("Контрольная сумма: %d\n", calculateChecksum(q.front));
-    printf("Количество серий: %d\n", countSeries(q.front));
-    printf("Прямой порядок: ");
+    printf("Контр. сумма: %d\n", calculateChecksum(q.front));
+    printf("Серии: %d\n", countSeries(q.front));
+    printf("Прямой порядок:  ");
     printListForwardRecursive(q.front);
     printf("Обратный порядок: ");
     printListBackwardRecursive(q.front);
     clearQueue(&q);
-    printf("\n");
 
-    printf("\nОчередь по возрастанию:\n");
-    fillQueueDescending(&q, 5);
-    printf("Элементов: ");
+    printf("\n2. Очередь по возрастанию:\n");
+    fillQueueDescending(&q, n);
+    printf("Элементы: ");
     printList(q.front);
-    printf("Контрольная сумма: %d\n", calculateChecksum(q.front));
-    printf("Количество серий: %d\n", countSeries(q.front));
-    printf("Прямой порядок: ");
+    printf("Контр. сумма: %d\n", calculateChecksum(q.front));
+    printf("Серии: %d\n", countSeries(q.front));
+    printf("Прямой порядок:  ");
     printListForwardRecursive(q.front);
     printf("Обратный порядок: ");
     printListBackwardRecursive(q.front);
     clearQueue(&q);
-    printf("\n");
 
-    printf("\nРандомная очередь:\n");
-    fillQueueRandom(&q, 5, 1, 10);
-    printf("Элементов: ");
+    printf("\n3. Случайная очередь:\n");
+    fillQueueRandom(&q, n, 1, 10);
+    printf("Элементы: ");
     printList(q.front);
-    printf("Контрольная сумма: %d\n", calculateChecksum(q.front));
-    printf("Количество серий: %d\n", countSeries(q.front));
-    printf("Прямой порядок: ");
+    printf("Контр. сумма: %d\n", calculateChecksum(q.front));
+    printf("Серии: %d\n", countSeries(q.front));
+    printf("Прямой порядок:  ");
     printListForwardRecursive(q.front);
     printf("Обратный порядок: ");
     printListBackwardRecursive(q.front);
     clearQueue(&q);
-    printf("\n");
 
     return 0;
 }
