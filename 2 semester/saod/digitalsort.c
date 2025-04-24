@@ -276,7 +276,7 @@ int main() {
         int n = sizes[i];
         int theoretical = 16 * n * 2; // 2 прохода (распределение и сборка)
         
-        printf("| %d | %d", n, theoretical);
+        printf("|   %d  |   %d"     , n, theoretical);
         
         for (int type = 0; type < 3; type++) {
             int* arr = (int*)malloc(n * sizeof(int));
@@ -295,7 +295,7 @@ int main() {
             if (!isSorted || sumBefore != sumAfter) {
                 printf(" | Ошибка сортировки");
             } else {
-                printf(" | %d", moves);
+                printf("    |   %d  ", moves);
             }
             
             free(arr);
