@@ -1,316 +1,163 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <limits.h>
 
-// Структура для узла списка
+#define BASE 256
+
 typedef struct Node {
-    int data;
+    int value;
     struct Node* next;
 } Node;
 
-// Структура для очереди
-typedef struct Queue {
-    Node* front;
-    Node* rear;
-} Queue;
-
-// Функции для работы с очередью
-Queue* createQueue() {
-    Queue* q = (Queue*)malloc(sizeof(Queue));
-    q->front = q->rear = NULL;
-    return q;
-}
-
-void enqueue(Queue* q, int data) {
+// Функция для создания нового узла
+Node* createNode(int value) {
     Node* newNode = (Node*)malloc(sizeof(Node));
-    newNode->data = data;
+    if (!newNode) exit(EXIT_FAILURE);
+    newNode->value = value;
     newNode->next = NULL;
-    
-    if (q->rear == NULL) {
-        q->front = q->rear = newNode;
-        return;
-    }
-    
-    q->rear->next = newNode;
-    q->rear = newNode;
+    return newNode;
 }
 
-int dequeue(Queue* q) {
-    if (q->front == NULL) return INT_MIN;
-    
-    Node* temp = q->front;
-    int data = temp->data;
-    
-    q->front = q->front->next;
-    
-    if (q->front == NULL)
-        q->rear = NULL;
-    
-    free(temp);
-    return data;
+// Получить разряд числа (от младшего к старшему)
+int getDigit(int value, int bytePos) {
+    return (value >> (8 * bytePos)) & 0xFF;
 }
 
-int isEmpty(Queue* q) {
-    return q->front == NULL;
-}
+// Функция цифровой сортировки (по псевдокоду)
+Node* digitalSort(Node* head, int maxBytes) {
+    Node* bucketsHead[BASE], *bucketsTail[BASE];
+    Node *p, *q;
+    int i, j, d;
 
-// Функция для создания списка из массива
-Node* createList(int arr[], int n) {
-    Node* head = NULL;
-    Node* tail = NULL;
-    
-    for (int i = 0; i < n; i++) {
-        Node* newNode = (Node*)malloc(sizeof(Node));
-        newNode->data = arr[i];
-        newNode->next = NULL;
-        
-        if (head == NULL) {
-            head = tail = newNode;
-        } else {
-            tail->next = newNode;
-            tail = newNode;
+    for (j = 0; j < maxBytes; j++) {
+        for (i = 0; i < BASE; i++) {
+            bucketsHead[i] = NULL;
+            bucketsTail[i] = NULL;
         }
+
+        p = head;
+        while (p != NULL) {
+            d = getDigit(p->value, j);
+
+            if (bucketsTail[d] == NULL) {
+                bucketsHead[d] = bucketsTail[d] = p;
+            } else {
+                bucketsTail[d]->next = p;
+                bucketsTail[d] = p;
+            }
+            p = p->next;
+        }
+
+        p = NULL;
+        for (i = 0; i < BASE; i++) {
+            if (bucketsHead[i] != NULL) {
+                if (p == NULL) {
+                    head = bucketsHead[i];
+                    p = bucketsTail[i];
+                } else {
+                    p->next = bucketsHead[i];
+                    p = bucketsTail[i];
+                }
+            }
+        }
+        if (p != NULL) p->next = NULL;
     }
-    
     return head;
 }
 
-// Функция для печати списка
-void printList(Node* head) {
-    while (head != NULL) {
-        printf("%d ", head->data);
+// Вспомогательные функции
+Node* generateRandomList(int size) {
+    Node* head = NULL;
+    Node* tail = NULL;
+    for (int i = 0; i < size; i++) {
+        int value = rand() % 1000000;
+        Node* node = createNode(value);
+        if (!head) {
+            head = tail = node;
+        } else {
+            tail->next = node;
+            tail = node;
+        }
+    }
+    return head;
+}
+
+Node* generateSortedList(int size, int descending) {
+    Node* head = NULL;
+    Node* tail = NULL;
+    for (int i = 0; i < size; i++) {
+        int value = descending ? (size - i) : i;
+        Node* node = createNode(value);
+        if (!head) {
+            head = tail = node;
+        } else {
+            tail->next = node;
+            tail = node;
+        }
+    }
+    return head;
+}
+
+void freeList(Node* head) {
+    Node* tmp;
+    while (head) {
+        tmp = head;
+        head = head->next;
+        free(tmp);
+    }
+}
+
+// Функция для нахождения максимального количества байт в числе
+int maxBytes(Node* head) {
+    int maxVal = 0;
+    while (head) {
+        if (head->value > maxVal)
+            maxVal = head->value;
         head = head->next;
     }
-    printf("\n");
+    int bytes = 0;
+    while (maxVal > 0) {
+        bytes++;
+        maxVal >>= 8;
+    }
+    return bytes;
 }
 
-// Цифровая сортировка для 16-битных чисел
-void digitalSort16(Node** headRef, int* moves) {
-    const int BITS = 16;
-    const int RADIX = 256; // 8 бит за проход (2^8 = 256)
-    
-    Node* head = *headRef;
-    Queue* buckets[RADIX];
-    
-    for (int i = 0; i < RADIX; i++) {
-        buckets[i] = createQueue();
-    }
-    
-    for (int shift = 0; shift < BITS; shift += 8) {
-        // Распределение по корзинам
-        Node* current = head;
-        while (current != NULL) {
-            int bucketIndex = (current->data >> shift) & 0xFF;
-            enqueue(buckets[bucketIndex], current->data);
-            (*moves)++;
-            current = current->next;
-        }
-        
-        // Сборка списка обратно
-        Node* newHead = NULL;
-        Node* newTail = NULL;
-        
-        for (int i = 0; i < RADIX; i++) {
-            while (!isEmpty(buckets[i])) {
-                int data = dequeue(buckets[i]);
-                (*moves)++;
-                
-                Node* newNode = (Node*)malloc(sizeof(Node));
-                newNode->data = data;
-                newNode->next = NULL;
-                
-                if (newHead == NULL) {
-                    newHead = newTail = newNode;
-                } else {
-                    newTail->next = newNode;
-                    newTail = newNode;
-                }
-            }
-        }
-        
-        // Освобождение старого списка
-        current = head;
-        while (current != NULL) {
-            Node* temp = current;
-            current = current->next;
-            free(temp);
-        }
-        
-        head = newHead;
-    }
-    
-    *headRef = head;
-}
-
-// Цифровая сортировка для 32-битных чисел
-void digitalSort32(Node** headRef, int* moves) {
-    const int BITS = 32;
-    const int RADIX = 256; // 8 бит за проход
-    
-    Node* head = *headRef;
-    Queue* buckets[RADIX];
-    
-    for (int i = 0; i < RADIX; i++) {
-        buckets[i] = createQueue();
-    }
-    
-    for (int shift = 0; shift < BITS; shift += 8) {
-        // Распределение по корзинам
-        Node* current = head;
-        while (current != NULL) {
-            int bucketIndex = (current->data >> shift) & 0xFF;
-            enqueue(buckets[bucketIndex], current->data);
-            (*moves)++;
-            current = current->next;
-        }
-        
-        // Сборка списка обратно
-        Node* newHead = NULL;
-        Node* newTail = NULL;
-        
-        for (int i = 0; i < RADIX; i++) {
-            while (!isEmpty(buckets[i])) {
-                int data = dequeue(buckets[i]);
-                (*moves)++;
-                
-                Node* newNode = (Node*)malloc(sizeof(Node));
-                newNode->data = data;
-                newNode->next = NULL;
-                
-                if (newHead == NULL) {
-                    newHead = newTail = newNode;
-                } else {
-                    newTail->next = newNode;
-                    newTail = newNode;
-                }
-            }
-        }
-        
-        // Освобождение старого списка
-        current = head;
-        while (current != NULL) {
-            Node* temp = current;
-            current = current->next;
-            free(temp);
-        }
-        
-        head = newHead;
-    }
-    
-    *headRef = head;
-}
-
-// Функция для проверки правильности сортировки
-int checkSorted(Node* head) {
-    if (head == NULL || head->next == NULL) return 1;
-    
-    Node* current = head;
-    while (current->next != NULL) {
-        if (current->data > current->next->data) {
-            return 0;
-        }
-        current = current->next;
-    }
-    return 1;
-}
-
-// Функция для подсчета контрольной суммы
-long long checkSum(Node* head) {
-    long long sum = 0;
-    while (head != NULL) {
-        sum += head->data;
-        head = head->next;
-    }
-    return sum;
-}
-
-// Функция для подсчета числа серий
-int countSeries(Node* head) {
-    if (head == NULL) return 0;
-    
-    int count = 1;
-    Node* current = head;
-    
-    while (current->next != NULL) {
-        if (current->data > current->next->data) {
-            count++;
-        }
-        current = current->next;
-    }
-    
-    return count;
-}
-
-// Функция для генерации тестовых данных
-void generateTestData(int arr[], int n, int type) {
-    switch (type) {
-        case 0: // Случайные числа
-            for (int i = 0; i < n; i++) {
-                arr[i] = rand() % 10000;
-            }
-            break;
-        case 1: // Возрастающая последовательность
-            for (int i = 0; i < n; i++) {
-                arr[i] = i;
-            }
-            break;
-        case 2: // Убывающая последовательность
-            for (int i = 0; i < n; i++) {
-                arr[i] = n - i - 1;
-            }
-            break;
-    }
+// Подсчёт количества операций (M = L(m + n))
+long calculateM(int L, int m, int n) {
+    return (long)L * (m + n);
 }
 
 int main() {
     srand(time(NULL));
-    
-    const int sizes[] = {100, 200, 300, 400, 500};
-    const char* types[] = {"Случайные", "Возрастающие", "Убывающие"};
-    
-    printf("Трудоемкость цифровой сортировки (16 бит)\n");
-    printf("| N  | Теоретич. M | Мф (Убыв.) | Мф (Случ.) | Мф (Возр.) |\n");
-    
-    for (int i = 0; i < 5; i++) {
-        int n = sizes[i];
-        int theoretical = 16 * n * 2; // 2 прохода (распределение и сборка)
-        
-        printf("|   %d  |   %d"     , n, theoretical);
-        
-        for (int type = 0; type < 3; type++) {
-            int* arr = (int*)malloc(n * sizeof(int));
-            generateTestData(arr, n, type);
-            
-            Node* head = createList(arr, n);
-            long long sumBefore = checkSum(head);
-            
-            int moves = 0;
-            digitalSort16(&head, &moves);
-            
-            long long sumAfter = checkSum(head);
-            int isSorted = checkSorted(head);
-            int series = countSeries(head);
-            
-            if (!isSorted || sumBefore != sumAfter) {
-                printf(" | Ошибка сортировки");
-            } else {
-                printf("    |   %d  ", moves);
-            }
-            
-            free(arr);
-            
-            // Освобождение списка
-            Node* current = head;
-            while (current != NULL) {
-                Node* temp = current;
-                current = current->next;
-                free(temp);
-            }
-        }
-        
-        printf(" |\n");
+
+    int sizes[] = {100, 200, 300, 400, 500};
+    int numSizes = sizeof(sizes) / sizeof(sizes[0]);
+
+    printf("N\tM (теоретич.)\tУбыв.\tСлуч.\tВозр.\n");
+
+    for (int s = 0; s < numSizes; s++) {
+        int n = sizes[s];
+        Node *listDesc = generateSortedList(n, 1);
+        Node *listRand = generateRandomList(n);
+        Node *listAsc = generateSortedList(n, 0);
+
+        int L_rand = maxBytes(listRand);
+        long M_theoretical = calculateM(L_rand, BASE, n);
+
+        int L_desc = maxBytes(listDesc);
+        int L_asc = maxBytes(listAsc);
+
+        long M_fact_desc = calculateM(L_desc, BASE, n);
+        long M_fact_rand = calculateM(L_rand, BASE, n);
+        long M_fact_asc = calculateM(L_asc, BASE, n);
+
+        printf("%d      %ld        %ld  %ld    %ld\n", n, M_theoretical, M_fact_desc, M_fact_rand, M_fact_asc);
+
+        freeList(listDesc);
+        freeList(listRand);
+        freeList(listAsc);
     }
-    
+
     return 0;
 }
