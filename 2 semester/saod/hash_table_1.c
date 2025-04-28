@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 typedef struct Node {
-    int key;
+    int key;        // ASCII-код символа
     struct Node* next;
 } Node;
 
@@ -38,6 +39,15 @@ void freeTable(Node** table, int tableSize) {
     free(table);
 }
 
+// Генерация случайного текста (1 КБ)
+void generateRandomText(char* buffer, size_t size) {
+    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.!?";
+    for (size_t i = 0; i < size - 1; i++) {
+        buffer[i] = charset[rand() % (sizeof(charset) - 1)];
+    }
+    buffer[size - 1] = '\0';
+}
+
 int main() {
     srand(time(NULL));
 
@@ -45,19 +55,19 @@ int main() {
     int primes[] = {11, 13, 17, 19, 23, 29, 31, 37, 41, 47};
     int primesCount = sizeof(primes) / sizeof(primes[0]);
 
-    int numKeys = 500; // Количество исходных символов (элементов)
-    int* keys = (int*)malloc(numKeys * sizeof(int));
+    const size_t textSize = 1024; // 1 КБ текста
+    char* text = (char*)malloc(textSize + 1);
 
-    if (!keys) {
+    if (!text) {
         printf("Ошибка выделения памяти.\n");
         return 1;
     }
 
-    // Генерируем случайные ключи
-    for (int i = 0; i < numKeys; i++) {
-        keys[i] = rand();
-    }
+   
+        generateRandomText(text, textSize + 1);
 
+
+    printf("\n Хеширование текста (1 КБ) методом прямого связывания \n");
     printf("-----------------------------------------------------------------|\n");
     printf("| Размер хеш-таблицы | Количество символов | Количество коллизий |\n");
     printf("-----------------------------------------------------------------|\n");
@@ -69,24 +79,24 @@ int main() {
         Node** table = (Node**)calloc(tableSize, sizeof(Node*));
         if (!table) {
             printf("Ошибка выделения памяти для таблицы.\n");
-            free(keys);
+            free(text);
             return 1;
         }
 
         int collisionCount = 0;
 
-        // Вставляем все ключи в хеш-таблицу
-        for (int i = 0; i < numKeys; i++) {
-            collisionCount += insert(table, tableSize, keys[i]);
+        // Вставляем все символы текста в хеш-таблицу
+        for (size_t i = 0; i < textSize && text[i] != '\0'; i++) {
+            collisionCount += insert(table, tableSize, (int)text[i]);
         }
 
-        printf("| %18d | %19d | %19d |\n", tableSize, numKeys, collisionCount);
+        printf("| %18d | %19zu | %19d |\n", tableSize, strlen(text), collisionCount);
 
         freeTable(table, tableSize);
     }
 
-   printf("-----------------------------------------------------------------|\n");
+    printf("-----------------------------------------------------------------|\n");
 
-    free(keys);
+    free(text);
     return 0;
 }
