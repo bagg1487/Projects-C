@@ -64,6 +64,55 @@ void freeList(Node* head) {
     }
 }
 
+#include <stdlib.h>
+
+typedef struct Node {
+    unsigned char Digit;
+    struct Node* Next;
+} Node;
+
+typedef struct {
+    Node* Head;
+    Node* Tail;
+} Queue;
+
+void DigitalSort(Node** S, int L) {
+    // Создаем массив из 256 очередей (по количеству возможных цифр 0-255)
+    Queue Q[256];
+    
+    // Инициализируем очереди
+    for (int i = 0; i < 256; i++) {
+        Q[i].Head = NULL;
+        Q[i].Tail = NULL;
+    }
+   
+    for (int j = L; j >= 1; j--) {
+        // Сбрасываем очереди
+        for (int i = 0; i < 256; i++) {
+            Q[i].Tail = (Node*)&Q[i].Head;
+        }
+        
+        Node* p = *S;
+        while (p != NULL) {
+            unsigned char d = p->Digit;
+            
+            Q[d].Tail->Next = p;
+            Q[d].Tail = p;
+            p = p->Next;
+        }
+        
+        p = (Node*)S;
+        for (int i = 0; i < 256; i++) {
+            if (Q[i].Tail != (Node*)&Q[i].Head) {
+                p->Next = Q[i].Head;
+                p = Q[i].Tail;
+            }
+        }
+        p->Next = NULL;
+
+        *S = ((Node*)S)->Next;
+    }
+}
 // Вычисление M
 long calculateM(int L, int m, int n) {
     return (long)L * (m + n);
