@@ -71,7 +71,7 @@ void freeList(Node* head) {
 
 // Вычисление M
 long calculateM(int L, int m, int n) {
-    return (long)L * (m + n);
+    return L * n;
 }
 
 void DigitalSort(Node** headPtr, int L) {
