@@ -41,7 +41,7 @@ void freeTable(Node** table, int tableSize) {
 
 // Генерация случайного текста (1 КБ)
 void generateRandomText(char* buffer, size_t size) {
-    const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ,.!?";
+    const char charset[] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 1234567890!@#$%^&*()_+-=[]{}|;\':\",./<>?~` Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 1234567890!@#$%^&*()_+-=[]{}|;\':\",./<>?~` Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 1234567890!@#$%^&*()_+-=[]{}|;\':\",./<>?~` Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 1234567890!@#$%^&*()_+-=[]{}|;\':\",./<>?~`";
     for (size_t i = 0; i < size - 1; i++) {
         buffer[i] = charset[rand() % (sizeof(charset) - 1)];
     }
@@ -58,14 +58,8 @@ int main() {
     const size_t textSize = 1024; // 1 КБ текста
     char* text = (char*)malloc(textSize + 1);
 
-    if (!text) {
-        printf("Ошибка выделения памяти.\n");
-        return 1;
-    }
-
+    generateRandomText(text, textSize + 1);
    
-        generateRandomText(text, textSize + 1);
-
 
     printf("\n Хеширование текста (1 КБ) методом прямого связывания \n");
     printf("-----------------------------------------------------------------|\n");
