@@ -4,14 +4,22 @@
 #include <iomanip>
 #include <vector>
 #include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
-
-// === Линейное пробирование ===
+// === Линейное пробирование с проверкой уникальности ===
 int linear_probing_chars(char A[], char table[], int n, int m) {
     int collisions = 0;
+    unordered_set<char> unique_chars; // Для отслеживания уникальных символов
+    
     for (int i = 0; i < n; i++) {
+        // Пропускаем дубликаты
+        if (unique_chars.count(A[i]) > 0) {
+            continue;
+        }
+        unique_chars.insert(A[i]);
+        
         int h = A[i] % m;
         int j = 0;
         while (j < m) {
@@ -20,17 +28,28 @@ int linear_probing_chars(char A[], char table[], int n, int m) {
                 table[idx] = A[i];
                 break;
             }
-            collisions++;
+            // Считаем коллизию только если символы разные
+            if (table[idx] != A[i]) {
+                collisions++;
+            }
             j++;
         }
     }
     return collisions;
 }
 
-// === Квадратичное пробирование ===
+// === Квадратичное пробирование с проверкой уникальности ===
 int quadratic_probing_chars(char A[], char table[], int n, int m) {
     int collisions = 0;
+    unordered_set<char> unique_chars; // Для отслеживания уникальных символов
+    
     for (int i = 0; i < n; i++) {
+        // Пропускаем дубликаты
+        if (unique_chars.count(A[i]) > 0) {
+            continue;
+        }
+        unique_chars.insert(A[i]);
+        
         int h = A[i] % m;
         int j = 1;
         int attempt = 0;
@@ -39,7 +58,10 @@ int quadratic_probing_chars(char A[], char table[], int n, int m) {
                 table[h] = A[i];
                 break;
             }
-            collisions++;
+            // Считаем коллизию только если символы разные
+            if (table[h] != A[i]) {
+                collisions++;
+            }
             h = (h + j * j) % m;
             j++;
             attempt++;
@@ -51,7 +73,7 @@ int quadratic_probing_chars(char A[], char table[], int n, int m) {
 // === Красивая печать таблицы символов ===
 void PrintSymbolTableFormatted(const char table[], int size, const string& title) {
     cout << "\n" << title << ":\n";
-    const int cols = 10;
+    const int cols = 5; // Уменьшил количество колонок для лучшей читаемости
 
     for (int row = 0; row < (size + cols - 1) / cols; row++) {
         int start = row * cols;
@@ -74,19 +96,37 @@ void PrintSymbolTableFormatted(const char table[], int size, const string& title
     cout << "\n";
 }
 
+// === Генерация случайного текста без дубликатов ===
+void generate_unique_chars(char A[], int n) {
+    unordered_set<char> used_chars;
+    const string charset = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+    
+    for (int i = 0; i < n; ) {
+        char c = charset[rand() % charset.size()];
+        if (used_chars.count(c) == 0) {
+            A[i] = c;
+            used_chars.insert(c);
+            i++;
+        }
+    }
+    A[n] = '\0';
+}
+
 // === ЗАДАНИЕ 2 ===
 void task2() {
-    const int n = 1024; // 1 КБ
-    const int m = 101;  // 101 ячейка в хеш-таблицах
+    const int n = 20; // Количество уникальных символов
+    const int m = 23; // Размер хеш-таблицы (простое число)
     
     char linear_table[m] = {0};
     char quadratic_table[m] = {0};
+    char A[n+1];
 
     srand(time(NULL));
-    char A[] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 1234567890!@#$%^&*()_+-=[]{}|;\':\",./<>?~` Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 1234567890!@#$%^&*()_+-=[]{}|;\':\",./<>?~` Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 1234567890!@#$%^&*()_+-=[]{}|;\':\",./<>?~` Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. 1234567890!@#$%^&*()_+-=[]{}|;\':\",./<>?~`";
+    generate_unique_chars(A, n); // Генерируем текст без дубликатов
 
-    cout << "ХЕШИРОВАНИЕ СИМВОЛОВ (m = " << m << ") \n";
+    cout << "ХЕШИРОВАНИЕ УНИКАЛЬНЫХ СИМВОЛОВ (m = " << m << ") \n";
     
+
 
     int linear_coll = linear_probing_chars(A, linear_table, n, m);
     int quad_coll = quadratic_probing_chars(A, quadratic_table, n, m);
@@ -94,16 +134,11 @@ void task2() {
     PrintSymbolTableFormatted(linear_table, m, "Хеш-таблица (линейные пробы)");
     PrintSymbolTableFormatted(quadratic_table, m, "Хеш-таблица (квадратичные пробы)");
 
-    cout << "Количество коллизий:\n";
-    cout << " - Линейные пробы:      " << linear_coll << "\n";
-    cout << " - Квадратичные пробы:  " << quad_coll << "\n";
-    cout << "\n\n";
 }
 
-// === ЗАДАНИЕ 3 ===
 void task3() {
-    vector<int> table_sizes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101};
-    const int n = 100;
+    vector<int> table_sizes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
+    const int n = 23;
 
     cout << " СРАВНЕНИЕ КОЛЛИЗИЙ (n = " << n << ")\n";
     
@@ -129,7 +164,6 @@ void task3() {
     }
 
 }
-
 // === MAIN ===
 int main() {
     task2();
