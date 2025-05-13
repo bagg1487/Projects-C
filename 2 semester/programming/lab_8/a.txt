@@ -1,0 +1,7 @@
+wget https://gitlab.com/cmocka/cmocka/-/archive/master/cmocka-master.tar.gz
+tar -xzf cmocka-master.tar.gz
+cd cmocka-master
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=$HOME/cmocka ..
+make
+make install
