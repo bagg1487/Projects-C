@@ -14,7 +14,7 @@ static void test_calculation(void **state) {
 static void test_validation(void **state) {
     (void)state;
     char *valid[] = {"5","program"};
-    assert_true(validateInput(2, valid));
+    assert_true(validateInput(3, valid));
     char *invalid[] = {"program"};
     assert_false(validateInput(1, invalid));
 }
