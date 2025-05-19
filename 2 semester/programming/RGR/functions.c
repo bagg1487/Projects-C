@@ -7,7 +7,7 @@ int triangularNumberRecursive(int n) {
     return n + triangularNumberRecursive(n - 1);}
 
 bool validateInput(int argc, char *argv[]) {
-    return argc == 2;
+    return argc == 3;
 }
 
 int parseInput(char *n_str) {
