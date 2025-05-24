@@ -1,1 +1,1 @@
-All exercises for this semester in folder **exersises**
+### All exercises for this semester in folder **exersises**
