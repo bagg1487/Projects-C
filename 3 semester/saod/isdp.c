@@ -128,7 +128,7 @@ void printTreeGraphically(Node* root) {
         printLevel(root, 1, level);
         printf("\n");
     }
-    
+}
 
 // Основная функция
 int main() {
@@ -177,7 +177,4 @@ int main() {
     
     // Очистка памяти
     free(arr);
-    // (Добавьте функцию для освобождения памяти дерева при необходимости)
-    
-    return 0;
 }
