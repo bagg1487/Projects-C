@@ -18,22 +18,37 @@ Node* createNode(int key) {
     return newNode;
 }
 
-// Построение ИСДП из отсортированного массива
-Node* buildBalancedBST(int arr[], int start, int end) {
-    if (start > end) {
+// Построение полного бинарного дерева с нумерацией сверху-вниз слева-направо
+Node* buildLevelOrderTree(int n) {
+    if (n <= 0) {
         return NULL;
     }
     
-    int mid = (start + end) / 2;
-    Node* root = createNode(arr[mid]);
+    // Создаем массив узлов
+    Node** nodes = (Node**)malloc(n * sizeof(Node*));
+    for (int i = 0; i < n; i++) {
+        nodes[i] = createNode(i + 1);
+    }
     
-    root->left = buildBalancedBST(arr, start, mid - 1);
-    root->right = buildBalancedBST(arr, mid + 1, end);
+    // Связываем узлы в дерево
+    for (int i = 0; i < n; i++) {
+        int leftIndex = 2 * i + 1;
+        int rightIndex = 2 * i + 2;
+        
+        if (leftIndex < n) {
+            nodes[i]->left = nodes[leftIndex];
+        }
+        if (rightIndex < n) {
+            nodes[i]->right = nodes[rightIndex];
+        }
+    }
     
+    Node* root = nodes[0];
+    free(nodes);
     return root;
 }
 
-// Обход дерева слева направо (симметричный обход)
+// Обход дерева слева-направо (симметричный обход)
 void inOrderTraversal(Node* root) {
     if (root != NULL) {
         inOrderTraversal(root->left);
@@ -41,8 +56,14 @@ void inOrderTraversal(Node* root) {
         inOrderTraversal(root->right);
     }
 }
-
-// Вычисление размера дерева (количество узлов)
+void preOrderTraversal(Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->key);  // Сначала корень
+        preOrderTraversal(root->left);  // Затем левое поддерево
+        preOrderTraversal(root->right);  // Затем правое поддерево
+    }
+}
+// Вычисление размера дерева
 int getSize(Node* root) {
     if (root == NULL) {
         return 0;
@@ -50,7 +71,7 @@ int getSize(Node* root) {
     return 1 + getSize(root->left) + getSize(root->right);
 }
 
-// Вычисление контрольной суммы (сумма всех ключей)
+// Вычисление контрольной суммы
 int getChecksum(Node* root) {
     if (root == NULL) {
         return 0;
@@ -68,7 +89,7 @@ int getHeight(Node* root) {
     return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
 }
 
-// Вычисление суммы высот всех узлов (для средней высоты)
+// Вычисление суммы высот всех узлов
 int getTotalHeight(Node* root, int currentHeight) {
     if (root == NULL) {
         return 0;
@@ -88,53 +109,25 @@ double getAverageHeight(Node* root) {
     return (double)totalHeight / size;
 }
 
-// Функция для отображения дерева (первые 5 уровней)
-void printTreeLevel(Node* root, int level, int currentLevel, int* positions) {
-    if (root == NULL || currentLevel > level) {
+// Печать уровня дерева
+void printLevel(Node* root, int level) {
+    if (root == NULL) {
+        printf("  ");
         return;
     }
-    
-    if (currentLevel == level) {
-        printf("%d", root->key);
-        return;
+    if (level == 1) {
+        printf("%2d ", root->key);
+    } else if (level > 1) {
+        printLevel(root->left, level - 1);
+        printLevel(root->right, level - 1);
     }
-    
-    printTreeLevel(root->left, level, currentLevel + 1, positions);
-    printf("   ");
-    printTreeLevel(root->right, level, currentLevel + 1, positions);
 }
 
-// Графический вывод первых 5 уровней
-void printTreeGraphically(Node* root) {
-    printf("\nГрафическое представление первых 5 уровней:\n");
-   
-    for (int level = 1; level <= 5; level++) {
-        printf("Уровень %d: ", level);
-        
-        // Массив для отслеживания позиций (не используется в упрощенной версии)
-        int positions[100] = {0};
-        
-        // Рекурсивная функция для печати уровня
-        void printLevel(Node* node, int current, int target) {
-            if (node == NULL) return;
-            if (current == target) {
-                printf("%d ", node->key);
-            } else {
-                printLevel(node->left, current + 1, target);
-                printLevel(node->right, current + 1, target);
-            }
-        }
-        
-        printLevel(root, 1, level);
-        printf("\n");
-    }
-}
 
 // Основная функция
 int main() {
     int n;
     
-    // Запрос количества вершин
     printf("Введите количество вершин: ");
     scanf("%d", &n);
     
@@ -143,20 +136,19 @@ int main() {
         return 1;
     }
     
-    // Создание отсортированного массива для удобства проверки
-    int* arr = (int*)malloc(n * sizeof(int));
-    for (int i = 0; i < n; i++) {
-        arr[i] = i + 1;  // Последовательные числа для удобства проверки
-    }
+    // Построение дерева с нумерацией сверху-вниз слева-направо
+    Node* root = buildLevelOrderTree(n);
     
-    // Построение ИСДП
-    Node* root = buildBalancedBST(arr, 0, n - 1);
+    \
     
-    // Вывод обхода дерева слева направо
-    printf("\nОбход дерева слева направо:\n");
+    // Вывод обхода слева-направо (симметричный)
+    printf("Обход слева-направо: ");
     inOrderTraversal(root);
     printf("\n\n");
     
+    // printf("Обход сверху-вниз: ");
+    // preOrderTraversal(root);
+    // printf("\n\n");
     // Вычисление характеристик дерева
     int size = getSize(root);
     int checksum = getChecksum(root);
@@ -169,12 +161,4 @@ int main() {
     printf("Высота: %d\n", height);
     printf("Средняя высота: %.2f\n", avgHeight);
     printf("\n");
-    
-    // Графический вывод первых 5 уровней
-    if (n >= 1) {
-        printTreeGraphically(root);
-    }
-    
-    // Очистка памяти
-    free(arr);
 }
