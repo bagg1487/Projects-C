@@ -19,21 +19,6 @@ Node* createNode(int key) {
     return newNode;
 }
 
-// Рекурсивная вставка в СДП
-Node* insertRecursive(Node* root, int key) {
-    if (root == NULL) {
-        return createNode(key);
-    }
-    
-    if (key < root->key) {
-        root->left = insertRecursive(root->left, key);
-    } else if (key > root->key) {
-        root->right = insertRecursive(root->right, key);
-    }
-    
-    return root;
-}
-
 // Вставка с двойной косвенностью
 void insertDoubleIndirect(Node** root, int key) {
     Node** current = root;
@@ -56,45 +41,6 @@ Node* findMin(Node* root) {
     while (root != NULL && root->left != NULL) {
         root = root->left;
     }
-    return root;
-}
-
-// Функция удаления вершины с заданным ключом (рекурсивная)
-Node* deleteNode(Node* root, int key) {
-    if (root == NULL) {
-        return NULL;
-    }
-    
-    // Поиск удаляемой вершины
-    if (key < root->key) {
-        root->left = deleteNode(root->left, key);
-    } else if (key > root->key) {
-        root->right = deleteNode(root->right, key);
-    } else {
-        // Нашли вершину для удаления
-        
-        // Случай 1: Нет детей или один ребенок
-        if (root->left == NULL) {
-            Node* temp = root->right;
-            free(root);
-            return temp;
-        } else if (root->right == NULL) {
-            Node* temp = root->left;
-            free(root);
-            return temp;
-        }
-        
-        // Случай 2: Два ребенка
-        // Находим минимальный узел в правом поддереве
-        Node* temp = findMin(root->right);
-        
-        // Копируем данные минимального узла
-        root->key = temp->key;
-        
-        // Рекурсивно удаляем минимальный узел из правого поддерева
-        root->right = deleteNode(root->right, temp->key);
-    }
-    
     return root;
 }
 
@@ -141,6 +87,15 @@ void inOrderTraversal(Node* root) {
         inOrderTraversal(root->left);
         printf("%d ", root->key);
         inOrderTraversal(root->right);
+    }
+}
+
+// ОБХОД СВЕРХУ-ВНИЗ (ПРЯМОЙ ОБХОД - PRE-ORDER)
+void topDownTraversal(Node* root) {
+    if (root != NULL) {
+        printf("%d ", root->key);           // Сначала корень
+        topDownTraversal(root->left);       // Потом левое поддерево
+        topDownTraversal(root->right);      // Потом правое поддерево
     }
 }
 
@@ -215,66 +170,36 @@ int main() {
     const int n = 100;
     int sequence[n];
     
-    // Генерируем случайную последовательность
+    
     generateRandomSequence(sequence, n);
+   
+    // printf("Последовательность для построения СДП: ");
+    // for (int i = 0; i < 10; i++) {  
+    //     printf("%d ", sequence[i]);
+    // }
+    // printf("...\n\n");
     
-    // Строим два СДП
-    Node* sdp1Root = NULL; // СДП рекурсивное
-    Node* sdp2Root = NULL; // СДП с двойной косвенностью
+    Node* sdpRoot = NULL;
     
-    // Заполняем СДП
     for (int i = 0; i < n; i++) {
-        sdp1Root = insertRecursive(sdp1Root, sequence[i]);
-        insertDoubleIndirect(&sdp2Root, sequence[i]);
+        insertDoubleIndirect(&sdpRoot, sequence[i]);
     }
-    
-    // Выводим обходы
-    printf("Обход СДП1 (рекурсивное): ");
-    inOrderTraversal(sdp1Root);
+  
+    printf("Обход СДП слева направо: ");
+    inOrderTraversal(sdpRoot);
     printf("\n\n");
     
-    printf("Обход СДП2 (двойная косвенность): ");
-    inOrderTraversal(sdp2Root);
+    printf("Обход СДП сверху-вниз: ");
+    topDownTraversal(sdpRoot);
     printf("\n\n");
     
-    // Вычисляем характеристики
     printf("| n=%d | Размер | Контр.сумма | Высота | Средн.высота |\n", n);
     printf("|-------|--------|-------------|--------|--------------|\n");
     
-    printf("| СДП1  | %6d | %11d | %6d | %12.2f |\n", 
-           getSize(sdp1Root), getChecksum(sdp1Root), 
-           getHeight(sdp1Root), getAverageHeight(sdp1Root));
+    printf("| СДП   | %6d | %11d | %6d | %12.2f |\n", 
+           getSize(sdpRoot), getChecksum(sdpRoot), 
+           getHeight(sdpRoot), getAverageHeight(sdpRoot));
     
-    printf("| СДП2  | %6d | %11d | %6d | %12.2f |\n", 
-           getSize(sdp2Root), getChecksum(sdp2Root), 
-           getHeight(sdp2Root), getAverageHeight(sdp2Root));
-    
-    // Удаление 10 вершин из первого СДП
-    printf("\n=== УДАЛЕНИЕ 10 ВЕРШИН ИЗ СДП1 (рекурсивное) ===\n");
-    
-    for (int i = 0; i < 10; i++) {
-        int keyToDelete;
-        printf("\nВведите ключ для удаления %d: ", i + 1);
-        scanf("%d", &keyToDelete);
-        
-        printf("Удаляем вершину с ключом %d...\n", keyToDelete);
-        
-        // Удаляем из первого СДП
-        sdp1Root = deleteNode(sdp1Root, keyToDelete);
-        
-        // Выводим обход после удаления
-        printf("Обход после удаления: ");
-        inOrderTraversal(sdp1Root);
-        printf("\n");
-        
-        // Выводим характеристики
-        printf("Размер: %d, Контр.сумма: %d, Высота: %d, Средняя высота: %.2f\n",
-               getSize(sdp1Root), getChecksum(sdp1Root), getHeight(sdp1Root), getAverageHeight(sdp1Root));
-        
-        printf("------------------------\n");
-    }
-    
-    // Удаление 10 вершин из второго СДП
     printf("\nУДАЛЕНИЕ 10 ВЕРШИН ИЗ СДП\n");
     
     for (int i = 0; i < 10; i++) {
@@ -283,18 +208,20 @@ int main() {
         scanf("%d", &keyToDelete);
         
         printf("Удаляем вершину с ключом %d...\n", keyToDelete);
-        
-        // Удаляем из второго СДП
-        deleteDoubleIndirect(&sdp2Root, keyToDelete);
-        
-        // Выводим обход после удаления
-        printf("Обход после удаления: ");
-        inOrderTraversal(sdp2Root);
+   
+        deleteDoubleIndirect(&sdpRoot, keyToDelete);
+
+        printf("Обход сверху-вниз после удаления: ");
+        topDownTraversal(sdpRoot);
         printf("\n");
+
+        printf("Обход СДП слева направо: ");
+        inOrderTraversal(sdpRoot);
+        printf("\n\n");
         
-        // Выводим характеристики
+
         printf("Размер: %d, Контр.сумма: %d, Высота: %d, Средняя высота: %.2f\n",
-               getSize(sdp2Root), getChecksum(sdp2Root), getHeight(sdp2Root), getAverageHeight(sdp2Root));
+               getSize(sdpRoot), getChecksum(sdpRoot), getHeight(sdpRoot), getAverageHeight(sdpRoot));
         
         printf("------------------------\n");
     }
