@@ -2,35 +2,20 @@
 #include <stdlib.h>
 #include <time.h>
 
-typedef struct BSTNode {
-    int key;
-    struct BSTNode *left, *right;
-} BSTNode;
-
-
 typedef struct AVLNode {
     int key;
     int height;
     struct AVLNode *left, *right;
 } AVLNode;
 
+typedef struct DBDNode {
+    int key;
+    int bal;
+    struct DBDNode *left, *right;
+} DBDNode;
 
-BSTNode* createBSTNode(int key) {
-    BSTNode* node = (BSTNode*)malloc(sizeof(BSTNode));
-    node->key = key;
-    node->left = node->right = NULL;
-    return node;
-}
-
-BSTNode* insertBST(BSTNode* root, int key) {
-    if (root == NULL) return createBSTNode(key);
-    if (key < root->key)
-        root->left = insertBST(root->left, key);
-    else if (key > root->key)
-        root->right = insertBST(root->right, key);
-    return root;
-}
-
+int VR = 1;
+int HR = 1;
 
 int getHeight(AVLNode* node) {
     return node ? node->height : 0;
@@ -96,13 +81,12 @@ AVLNode* insertAVL(AVLNode* node, int key) {
     else if (key > node->key)
         node->right = insertAVL(node->right, key);
     else
-        return node; 
+        return node;
     
     node->height = 1 + max(getHeight(node->left), getHeight(node->right));
     
     int balance = getBalance(node);
     
- 
     if (balance > 1 && key < node->left->key)
         return rotateLL(node);
     
@@ -112,19 +96,68 @@ AVLNode* insertAVL(AVLNode* node, int key) {
     if (balance > 1 && key > node->left->key)
         return rotateLR(node);
     
-   
     if (balance < -1 && key < node->right->key)
         return rotateRL(node);
     
     return node;
 }
 
-void inorder(BSTNode* root) {
-    if (root != NULL) {
-        inorder(root->left);
-        printf("%d ", root->key);
-        inorder(root->right);
+DBDNode* createDBDNode(int key) {
+    DBDNode* node = (DBDNode*)malloc(sizeof(DBDNode));
+    node->key = key;
+    node->left = node->right = NULL;
+    node->bal = 0;
+    return node;
+}
+
+DBDNode* B2INSERT(int D, DBDNode *p) {
+    if (p == NULL) {
+        p = createDBDNode(D);
+        VR = 1;
+        return p;
     }
+    
+    if (p->key > D) {
+        p->left = B2INSERT(D, p->left);
+        if (VR == 1) {
+            if (p->bal == 0) {
+                DBDNode* q = p->left;
+                p->left = q->right;
+                q->right = p;
+                p = q;
+                p->bal = 1;
+                VR = 0;
+                HR = 1;
+            } else {
+                p->bal = 0;
+                VR = 1;
+                HR = 0;
+            }
+        } else {
+            HR = 0;
+        }
+    } else if (p->key < D) {
+        p->right = B2INSERT(D, p->right);
+        if (VR == 1) {
+            p->bal = 1;
+            HR = 1;
+            VR = 0;
+        } else if (HR == 1) {
+            if (p->bal == 1) {
+                DBDNode* q = p->right;
+                p->bal = 0;
+                q->bal = 0;
+                p->right = q->left;
+                q->left = p;
+                p = q;
+                VR = 1;
+                HR = 0;
+            } else {
+                HR = 0;
+            }
+        }
+    }
+    return p;
 }
 
 void inorderAVL(AVLNode* root) {
@@ -135,68 +168,36 @@ void inorderAVL(AVLNode* root) {
     }
 }
 
-int treeSize(BSTNode* root) {
-    return root ? 1 + treeSize(root->left) + treeSize(root->right) : 0;
+void inorderDBD(DBDNode* root) {
+    if (root != NULL) {
+        inorderDBD(root->left);
+        printf("%d ", root->key);
+        inorderDBD(root->right);
+    }
 }
 
 int treeSizeAVL(AVLNode* root) {
     return root ? 1 + treeSizeAVL(root->left) + treeSizeAVL(root->right) : 0;
 }
 
-int treeSum(BSTNode* root) {
-    return root ? root->key + treeSum(root->left) + treeSum(root->right) : 0;
+int treeSizeDBD(DBDNode* root) {
+    return root ? 1 + treeSizeDBD(root->left) + treeSizeDBD(root->right) : 0;
 }
 
 int treeSumAVL(AVLNode* root) {
     return root ? root->key + treeSumAVL(root->left) + treeSumAVL(root->right) : 0;
 }
 
-int treeHeight(BSTNode* root) {
-    return root ? 1 + max(treeHeight(root->left), treeHeight(root->right)) : 0;
+int treeSumDBD(DBDNode* root) {
+    return root ? root->key + treeSumDBD(root->left) + treeSumDBD(root->right) : 0;
 }
 
 int treeHeightAVL(AVLNode* root) {
     return root ? root->height : 0;
 }
 
-double averageDepth(BSTNode* root) {
-    if (root == NULL) return 0;
-    
-    typedef struct {
-        BSTNode* node;
-        int level;
-    } QueueItem;
-    
-    QueueItem* queue = (QueueItem*)malloc(100 * sizeof(QueueItem));
-    int front = 0, rear = 0;
-    int totalDepth = 0, nodeCount = 0;
-    
-    queue[rear].node = root;
-    queue[rear].level = 1;
-    rear++;
-    
-    while (front < rear) {
-        BSTNode* current = queue[front].node;
-        int level = queue[front].level;
-        front++;
-        
-        totalDepth += level;
-        nodeCount++;
-        
-        if (current->left) {
-            queue[rear].node = current->left;
-            queue[rear].level = level + 1;
-            rear++;
-        }
-        if (current->right) {
-            queue[rear].node = current->right;
-            queue[rear].level = level + 1;
-            rear++;
-        }
-    }
-    
-    free(queue);
-    return (double)totalDepth / nodeCount;
+int treeHeightDBD(DBDNode* root) {
+    return root ? 1 + max(treeHeightDBD(root->left), treeHeightDBD(root->right)) : 0;
 }
 
 double averageDepthAVL(AVLNode* root) {
@@ -207,7 +208,7 @@ double averageDepthAVL(AVLNode* root) {
         int level;
     } QueueItem;
     
-    QueueItem* queue = (QueueItem*)malloc(100 * sizeof(QueueItem));
+    QueueItem* queue = (QueueItem*)malloc(1000 * sizeof(QueueItem));
     int front = 0, rear = 0;
     int totalDepth = 0, nodeCount = 0;
     
@@ -239,17 +240,54 @@ double averageDepthAVL(AVLNode* root) {
     return (double)totalDepth / nodeCount;
 }
 
+double averageDepthDBD(DBDNode* root) {
+    if (root == NULL) return 0;
+    
+    typedef struct {
+        DBDNode* node;
+        int level;
+    } QueueItem;
+    
+    QueueItem* queue = (QueueItem*)malloc(1000 * sizeof(QueueItem));
+    int front = 0, rear = 0;
+    int totalDepth = 0, nodeCount = 0;
+    
+    queue[rear].node = root;
+    queue[rear].level = 1;
+    rear++;
+    
+    while (front < rear) {
+        DBDNode* current = queue[front].node;
+        int level = queue[front].level;
+        front++;
+        
+        totalDepth += level;
+        nodeCount++;
+        
+        if (current->left) {
+            queue[rear].node = current->left;
+            queue[rear].level = level + 1;
+            rear++;
+        }
+        if (current->right) {
+            queue[rear].node = current->right;
+            queue[rear].level = level + 1;
+            rear++;
+        }
+    }
+    
+    free(queue);
+    return (double)totalDepth / nodeCount;
+}
 
 int main() {
     srand(time(NULL));
     
-
     int numbers[100];
     for (int i = 0; i < 100; i++) {
         numbers[i] = i + 1;
     }
     
-   
     for (int i = 99; i > 0; i--) {
         int j = rand() % (i + 1);
         int temp = numbers[i];
@@ -257,38 +295,36 @@ int main() {
         numbers[j] = temp;
     }
     
-    BSTNode* bstRoot = NULL;
     AVLNode* avlRoot = NULL;
+    DBDNode* dbdRoot = NULL;
 
     for (int i = 0; i < 100; i++) {
-        bstRoot = insertBST(bstRoot, numbers[i]);
         avlRoot = insertAVL(avlRoot, numbers[i]);
+        VR = 1;
+        HR = 1;
+        dbdRoot = B2INSERT(numbers[i], dbdRoot);
     }
     
-
-    printf("Обход ДБП (слева-направо):\n");
-    inorder(bstRoot);
-    printf("\n\n");
-    
- 
-    printf("Обход АВЛ (слева-направо):\n");
+    printf("Обход АВЛ:\n");
     inorderAVL(avlRoot);
     printf("\n\n");
     
-   
-    int bstSize = treeSize(bstRoot);
-    int avlSize = treeSizeAVL(avlRoot);
-    int bstSum = treeSum(bstRoot);
-    int avlSum = treeSumAVL(avlRoot);
-    int bstHeight = treeHeight(bstRoot);
-    int avlHeight = treeHeightAVL(avlRoot);
-    double bstAvgDepth = averageDepth(bstRoot);
-    double avlAvgDepth = averageDepthAVL(avlRoot);
+    printf("Обход ДБД:\n");
+    inorderDBD(dbdRoot);
+    printf("\n\n");
     
-   
+    int avlSize = treeSizeAVL(avlRoot);
+    int dbdSize = treeSizeDBD(dbdRoot);
+    int avlSum = treeSumAVL(avlRoot);
+    int dbdSum = treeSumDBD(dbdRoot);
+    int avlHeight = treeHeightAVL(avlRoot);
+    int dbdHeight = treeHeightDBD(dbdRoot);
+    double avlAvgDepth = averageDepthAVL(avlRoot);
+    double dbdAvgDepth = averageDepthDBD(dbdRoot);
+    
     printf("n=100    Размер  Контр.Сумма  Высота  Средн.высота\n");
     printf("АВЛ      %-7d %-12d %-7d %-12.2f\n", avlSize, avlSum, avlHeight, avlAvgDepth);
-    printf("ДБП      %-7d %-12d %-7d %-12.2f\n", bstSize, bstSum, bstHeight, bstAvgDepth);
+    printf("ДБД      %-7d %-12d %-7d %-12.2f\n", dbdSize, dbdSum, dbdHeight, dbdAvgDepth);
     
     return 0;
 }
