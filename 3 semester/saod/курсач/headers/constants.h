@@ -1,0 +1,12 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define FIO_SIZE 32
+#define STREET_SIZE 18  
+#define DATE_SIZE 10
+#define RECORD_SIZE (FIO_SIZE + STREET_SIZE + 2 + 2 + DATE_SIZE)
+#define FIO_UTF8_SIZE (FIO_SIZE * 2 + 1)
+#define STREET_UTF8_SIZE (STREET_SIZE * 2 + 1)
+#define DATE_UTF8_SIZE (DATE_SIZE * 2 + 1)
+
+#endif
